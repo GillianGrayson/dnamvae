@@ -1,9 +1,8 @@
 from torch import nn
 import torch
-from torch.nn import functional as F
 
 
-class FCVAE(nn.Module):
+class FCVAENet(nn.Module):
 
     def __init__(self, hparams: dict):
         super().__init__()
@@ -57,46 +56,6 @@ class FCVAE(nn.Module):
         q = torch.distributions.Normal(mu, std)
         z = q.rsample()
         return p, q, z
-
-    def step(self, batch):
-        x, y = batch
-
-        mu, log_var = self.encode(x)
-        p, q, z = self.sample(mu, log_var)
-        x_hat = self.decoder(z)
-
-        recon_loss = F.mse_loss(x_hat, x, reduction='mean')
-
-        log_qz = q.log_prob(z)
-        log_pz = p.log_prob(z)
-
-        kl = log_qz - log_pz
-        kl_mean = kl.mean()
-        kl_final = kl_mean * self.kl_coeff
-
-        kl_vanilla_1 = (-0.5 * (1 + log_var - mu ** 2 - torch.exp(log_var)).sum(dim=1)).mean(dim=0)
-        kl_vanilla_2 = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
-        z_vanilla = self.alt_reparametrize(mu, log_var)
-        x_hat_vanilla = self.decoder(z_vanilla)
-
-        loss = kl_final + recon_loss
-
-        logs = {
-            "recon_loss": recon_loss,
-            "kl_loss": kl_final,
-            "loss": loss,
-        }
-        return loss, logs
-
-    def training_step(self, batch, batch_idx):
-        loss, logs = self.step(batch)
-        self.log_dict({f"train_{k}": v for k, v in logs.items()})
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        loss, logs = self.step(batch)
-        self.log_dict({f"val_{k}": v for k, v in logs.items()})
-        return loss
 
     def alt_reparametrize(self, mu, log_var):
         # std = torch.exp(0.5 * log_var)
