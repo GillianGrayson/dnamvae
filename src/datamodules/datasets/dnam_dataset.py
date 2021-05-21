@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 import pandas as pd
-from tqdm import tqdm
+import tqdm
 
 
 class DNAmDataset(Dataset):
@@ -19,11 +19,11 @@ class DNAmDataset(Dataset):
         self.num_subjects = self.raw_data['beta'].shape[0]
         self.num_features = len(self.cpgs)
 
-        data = np.zeros((self.num_subjects, self.num_features), dtype=np.float64)
+        data = np.zeros((self.num_subjects, self.num_features), dtype=np.float32)
 
-        self.X = pd.DataFrame(data=data, index=self.raw_data['beta'], columns=self.cpgs)
-        for cpg in tqdm(self.raw_data['beta'], mininterval=60.0, desc='DNAmDataset creating'):
-            self.X[cpg] = self.raw_data[cpg]
+        self.X = pd.DataFrame(data=data, index=self.raw_data['beta'].index, columns=self.cpgs)
+        for cpg in tqdm.tqdm(list(self.raw_data['beta'].columns.values), mininterval=1.0, desc='DNAmDataset creating'):
+            self.X[cpg] = self.raw_data['beta'][cpg]
 
         self.y = self.raw_data['pheno'].loc[:, self.outcome]
 

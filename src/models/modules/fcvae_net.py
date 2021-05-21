@@ -9,10 +9,10 @@ class FCVAENet(nn.Module):
 
         self.n_input = hparams['n_input']
         self.n_latent = hparams['n_latent']
-        self.topology = hparams['topology']
+        self.topology = list(hparams['topology'])
         self.kl_coeff = hparams['kl_coeff']
 
-        self.encoder_topology = [self.n_inputn_input] + self.topology
+        self.encoder_topology = [self.n_input] + self.topology
         self.decoder_topology = [ self.n_latent] + self.topology[::-1]
 
         self.encoder_layers = []

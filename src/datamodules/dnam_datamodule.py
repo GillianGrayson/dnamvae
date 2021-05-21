@@ -47,7 +47,7 @@ class DNAmDataModule(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         """Load data. Set variables: self.data_train, self.data_val, self.data_test."""
-        f = open(self.cpgs_fn, 'rb')
+        f = open(self.data_fn, 'rb')
         self.raw_data = pickle.load(f)
         f.close()
 

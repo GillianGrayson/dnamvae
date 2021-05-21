@@ -3,8 +3,8 @@
 # specify here default training configuration
 defaults:
     - trainer: minimal.yaml
-    - model: mnist_model.yaml
-    - datamodule: mnist_datamodule.yaml
+    - model: fcvae_model.yaml
+    - datamodule: dnam_datamodule.yaml
     - callbacks: default.yaml  # set this to null if you don't want to use callbacks
     - logger: csv.yaml  # set logger here or use command line (e.g. `python run.py logger=wandb`)
 
@@ -33,7 +33,7 @@ data_dir: ${work_dir}/data/
 # this will run 1 train, val and test loop with only 1 batch
 # equivalent to running `python run.py trainer.fast_dev_run=true`
 # (this is placed here just for easier access from command line)
-debug: False
+debug: True
 
 
 # pretty print config at the start of the run using Rich library
