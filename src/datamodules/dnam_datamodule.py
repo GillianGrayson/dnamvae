@@ -10,8 +10,7 @@ class DNAmDataModule(LightningDataModule):
 
     def __init__(
             self,
-            data_fn: str = "E:/YandexDisk/Work/dnamvae/data/datasets/unn/data.pkl",
-            cpgs_fn: str = "E:/YandexDisk/Work/dnamvae/data/annotation/cpgs.pkl",
+            data_fn: str = "E:/YandexDisk/Work/dnamvae/data/datasets/unn/data_nn.pkl",
             outcome: str = 'Age',
             train_val_test_split: Tuple[int, int, int] = (130, 30, 24),
             batch_size: int = 64,
@@ -22,19 +21,11 @@ class DNAmDataModule(LightningDataModule):
         super().__init__()
 
         self.data_fn = data_fn
-        self.cpgs_fn = cpgs_fn
         self.outcome = outcome
         self.train_val_test_split = train_val_test_split
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
-
-        f = open(self.cpgs_fn, 'rb')
-        self.cpgs = pickle.load(f)
-        f.close()
-
-        # self.dims is returned when you call datamodule.size()
-        self.dims = (1, len(self.cpgs))
 
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
@@ -48,10 +39,13 @@ class DNAmDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         """Load data. Set variables: self.data_train, self.data_val, self.data_test."""
         f = open(self.data_fn, 'rb')
-        self.raw_data = pickle.load(f)
+        self.data = pickle.load(f)
         f.close()
 
-        dataset = DNAmDataset(self.raw_data, self.cpgs, self.outcome)
+        # self.dims is returned when you call datamodule.size()
+        self.dims = (1, self.data['beta'].shape[1])
+
+        dataset = DNAmDataset(self.data, self.outcome)
 
         self.data_train, self.data_val, self.data_test = random_split(
             dataset, self.train_val_test_split

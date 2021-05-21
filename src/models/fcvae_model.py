@@ -53,7 +53,7 @@ class FCVAEModel(LightningModule):
 
         kl = log_qz - log_pz
         kl_mean = kl.mean()
-        kl_final = kl_mean * self.kl_coeff
+        kl_final = kl_mean * self.hparams.kl_coeff
 
         kl_vanilla_1 = (-0.5 * (1 + log_var - mu ** 2 - torch.exp(log_var)).sum(dim=1)).mean(dim=0)
         kl_vanilla_2 = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)

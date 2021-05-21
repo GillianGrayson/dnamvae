@@ -1,7 +1,6 @@
 _target_: src.datamodules.dnam_datamodule.DNAmDataModule
 
-data_fn: "E:/YandexDisk/Work/dnamvae/data/datasets/unn/data.pkl"
-cpgs_fn: "E:/YandexDisk/Work/dnamvae/data/annotation/cpgs.pkl"
+data_fn: "${data_dir}/data_nn.pkl"
 outcome: "Age"
 batch_size: 5
 train_val_test_split: [130, 30, 24]
