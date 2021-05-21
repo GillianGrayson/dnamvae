@@ -2,7 +2,7 @@ _target_: src.datamodules.dnam_datamodule.DNAmDataModule
 
 data_fn: "${data_dir}/data_nn.pkl"
 outcome: "Age"
-batch_size: 5
+batch_size: 16
 train_val_test_split: [130, 30, 24]
 num_workers: 0
 pin_memory: False

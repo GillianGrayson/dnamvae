@@ -18,7 +18,6 @@ class FCVAENet(nn.Module):
         self.encoder_layers = []
         for i in range(len(self.encoder_topology) - 1):
             layer = nn.Linear(self.encoder_topology[i], self.encoder_topology[i + 1])
-            nn.init.xavier_uniform(layer.weight)
             self.encoder_layers.append(nn.Sequential(layer, nn.BatchNorm1d(self.encoder_topology[i + 1]), nn.ReLU()))
         self.encoder = nn.Sequential(*self.encoder_layers)
 
@@ -28,7 +27,6 @@ class FCVAENet(nn.Module):
         self.decoder_layers = []
         for i in range(len(self.decoder_topology) - 1):
             layer = nn.Linear(self.decoder_topology[i], self.decoder_topology[i + 1])
-            nn.init.xavier_uniform(layer.weight)
             self.decoder_layers.append(nn.Sequential(layer, nn.BatchNorm1d(self.decoder_topology[i + 1]), nn.ReLU()))
         self.decoder_layers = nn.Sequential(*self.decoder_layers)
         self.output_layer = nn.Sequential(nn.Linear(self.decoder_topology[-1], self.n_input), nn.Sigmoid())
