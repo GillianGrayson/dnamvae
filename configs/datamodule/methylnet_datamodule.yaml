@@ -1,0 +1,7 @@
+_target_: src.datamodules.methylnet_datamodule.MethylNetDataModule
+
+data_fn: "${data_dir}"
+outcome: "Age"
+batch_size: 16
+num_workers: 0
+pin_memory: False
