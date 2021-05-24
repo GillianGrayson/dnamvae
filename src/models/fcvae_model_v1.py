@@ -5,7 +5,7 @@ from src.models.modules.fcvae_net import FCVAENet
 from torch.nn import functional as F
 
 
-class FCVAEModel(LightningModule):
+class FCVAEModelV1(LightningModule):
     """
     A LightningModule organizes your PyTorch code into 5 sections:
         - Computations (init).
@@ -37,13 +37,13 @@ class FCVAEModel(LightningModule):
         self.model = FCVAENet(hparams=self.hparams)
 
     def forward(self, x: torch.Tensor):
-        return self.model(x)
+        return self.model.forward_v1(x)
 
     def step(self, batch: Any):
         x, y = batch
 
         mu, log_var = self.model.encode(x)
-        p, q, z =  self.model.sample(mu, log_var)
+        p, q, z =  self.model.v1_reparametrize(mu, log_var)
         x_hat =  self.model.decoder(z)
 
         recon_loss = F.mse_loss(x_hat, x, reduction='mean')
@@ -54,11 +54,6 @@ class FCVAEModel(LightningModule):
         kl = log_qz - log_pz
         kl_mean = kl.mean()
         kl_final = kl_mean * self.hparams.kl_coeff
-
-        kl_vanilla_1 = (-0.5 * (1 + log_var - mu ** 2 - torch.exp(log_var)).sum(dim=1)).mean(dim=0)
-        kl_vanilla_2 = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
-        z_vanilla = self.model.alt_reparametrize(mu, log_var)
-        x_hat_vanilla = self.model.decoder(z_vanilla)
 
         loss = kl_final + recon_loss
 

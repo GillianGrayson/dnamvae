@@ -38,29 +38,24 @@ class FCVAENet(nn.Module):
         log_var = self.hidden_log_var(hidden)
         return mu,log_var
 
-    def forward(self, x):
+    def forward_v1(self, x):
         mu, log_var = self.encode(x)
-        p, q, z = self.sample(mu, log_var)
+        p, q, z = self.v1_reparametrize(mu, log_var)
         return self.decoder(z)
 
-    def _run_step(self, x):
+    def forward_v2(self, x):
         mu, log_var = self.encode(x)
-        p, q, z = self.sample(mu, log_var)
-        return z, self.decoder(z), p, q
+        z = self.v2_reparametrize(mu, log_var)
+        return self.decoder(z)
 
-    def sample(self, mu, log_var):
+    def v1_reparametrize(self, mu, log_var):
         std = torch.exp(0.5 * log_var)
         p = torch.distributions.Normal(torch.zeros_like(mu), torch.ones_like(std))
         q = torch.distributions.Normal(mu, std)
         z = q.rsample()
         return p, q, z
 
-    def alt_reparametrize(self, mu, log_var):
-        # std = torch.exp(0.5 * log_var)
-        # eps = torch.randn(size=(mu.size(0), mu.size(1)))
-        # eps = eps.type_as(mu)
-
+    def v2_reparametrize(self, mu, log_var):
         std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
-
         return mu + std * eps

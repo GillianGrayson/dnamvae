@@ -1,4 +1,4 @@
-_target_: src.models.fcvae_model.FCVAEModel
+_target_: src.models.fcvae_model_v1.FCVAEModelV1
 
 n_input: 900075
 n_latent: 100
