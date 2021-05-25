@@ -39,6 +39,11 @@ class FCVAEModelV2(LightningModule):
     def forward(self, x: torch.Tensor):
         return self.model.forward_v2(x)
 
+    def get_latent(self, x: torch.Tensor):
+        mu, log_var = self.model.encode(x)
+        z = self.model.v2_reparametrize(mu, log_var)
+        return z
+
     def step(self, batch: Any):
         x, y = batch
 
@@ -46,8 +51,8 @@ class FCVAEModelV2(LightningModule):
 
         kl_final = (-0.5 * (1 + log_var - mu ** 2 - torch.exp(log_var)).sum(dim=1)).mean(dim=0)
 
-        z =  self.model.v2_reparametrize(mu, log_var)
-        x_hat =  self.model.decoder(z)
+        z = self.model.v2_reparametrize(mu, log_var)
+        x_hat = self.model.decoder(z)
 
         recon_loss = F.mse_loss(x_hat, x, reduction='mean')
 

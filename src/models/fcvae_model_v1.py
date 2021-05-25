@@ -39,6 +39,11 @@ class FCVAEModelV1(LightningModule):
     def forward(self, x: torch.Tensor):
         return self.model.forward_v1(x)
 
+    def get_latent(self, x: torch.Tensor):
+        mu, log_var = self.model.encode(x)
+        p, q, z = self.model.v1_reparametrize(mu, log_var)
+        return z
+
     def step(self, batch: Any):
         x, y = batch
 
