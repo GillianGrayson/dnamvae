@@ -1,8 +1,8 @@
 _target_: src.models.fcvae_model_v1.FCVAEModelV1
 
-n_input: 25000 # 900075
-n_latent: 200
-topology: [1000, 750, 500]
+n_input: 900075
+n_latent: 100
+topology: [150, 125]
 kl_coeff: 1.0
-lr: 0.01
-weight_decay: 0.005
+lr: 0.0001
+weight_decay: 0.00005
