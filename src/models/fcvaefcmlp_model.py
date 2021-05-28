@@ -27,8 +27,6 @@ class FCVAEFCMLPModel(LightningModule):
             n_output: int = 1,
             topology: List[int] = None,
             dropout: float = 0.1,
-            is_softmax: bool = False,
-            kl_coeff: int = 1.0,
             lr: float = 0.001,
             weight_decay: float = 0.0005,
             **kwargs
@@ -50,21 +48,15 @@ class FCVAEFCMLPModel(LightningModule):
         self.mlp_layers.append(nn.Linear(self.topology[-1], self.n_output))
 
         if task == "classification":
-            if n_output == 1:
-                self.mlp_layers.append(nn.Sigmoid())
-                self.loss_fn = torch.nn.BCEWithLogitsLoss(reduction='mean')
-            elif n_output > 2:
-                self.loss_fn = torch.nn.CrossEntropyLoss(reduction='mean')
-            else:
+            self.loss_fn = torch.nn.CrossEntropyLoss(reduction='mean')
+            if n_output < 2:
                 raise ValueError(f"Classification with {n_output} classes")
         elif task == "regression":
             self.loss_fn = torch.nn.MSELoss(reduction='mean')
 
         self.mlp = nn.Sequential(*self.mlp_layers)
 
-        self.train_accuracy = Accuracy()
-        self.val_accuracy = Accuracy()
-        self.test_accuracy = Accuracy()
+        self.accuracy = Accuracy()
 
     def forward(self, x: torch.Tensor):
         z = self.feature_extractor.get_latent(x)
@@ -80,35 +72,17 @@ class FCVAEFCMLPModel(LightningModule):
         out = self.forward(x)
         loss = self.loss_fn(out, y)
 
+        logs = {"loss": loss}
         if self.task == "classification":
-            if self.n_output == 1:
-                out_tag = torch.round(torch.sigmoid(out))
-            elif self.n_output > 2:
-                out_tag = torch.argmax(out, dim=1)
+            out_tag = torch.argmax(out, dim=1)
+            acc = self.accuracy(out_tag, y)
+            logs["acc"] = acc
 
-        x_hat = self.model.decoder(z)
-
-        recon_loss = F.mse_loss(x_hat, x, reduction='mean')
-
-        log_qz = q.log_prob(z)
-        log_pz = p.log_prob(z)
-
-        kl = log_qz - log_pz
-        kl_mean = kl.mean()
-        kl_final = kl_mean * self.hparams.kl_coeff
-
-        loss = kl_final + recon_loss
-
-        logs = {
-            "loss": loss,
-            "recon_loss": recon_loss,
-            "kl_loss": kl_final
-        }
         return loss, logs
 
     def training_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"train_{k}": v for k, v in logs.items()}
+        d = {f"train/{k}": v for k, v in logs.items()}
         self.log_dict(d)
 
         # we can return here dict with any tensors
@@ -122,7 +96,7 @@ class FCVAEFCMLPModel(LightningModule):
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"val_{k}": v for k, v in logs.items()}
+        d = {f"val/{k}": v for k, v in logs.items()}
         self.log_dict(d)
         return logs
 

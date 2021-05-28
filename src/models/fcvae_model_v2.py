@@ -2,7 +2,6 @@ from typing import Any, List
 import torch
 from pytorch_lightning import LightningModule
 from src.models.modules.fcvae_net import FCVAENet
-from torch.nn import functional as F
 
 
 class FCVAEModelV2(LightningModule):
@@ -23,7 +22,7 @@ class FCVAEModelV2(LightningModule):
             n_input: int = 784,
             n_latent: int = 256,
             topology: int = 256,
-            loss_type: str = "BCE",
+            loss_type: str = "MSE",
             kl_coeff: int = 256,
             lr: float = 0.001,
             weight_decay: float = 0.0005,

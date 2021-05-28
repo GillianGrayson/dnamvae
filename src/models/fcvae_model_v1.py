@@ -23,7 +23,7 @@ class FCVAEModelV1(LightningModule):
             n_input: int = 784,
             n_latent: int = 256,
             topology: int = 256,
-            loss_type: str = "BCE",
+            loss_type: str = "MSE",
             kl_coeff: int = 256,
             lr: float = 0.001,
             weight_decay: float = 0.0005,
@@ -35,9 +35,9 @@ class FCVAEModelV1(LightningModule):
         # it also allows to access params with 'self.hparams' attribute
         self.save_hyperparameters()
 
-        if self.loss_type == "MSE":
+        if self.hparams.loss_type == "MSE":
             self.loss_fn = torch.nn.MSELoss(reduction='mean')
-        elif self.loss_type == "BCE":
+        elif self.hparams.loss_type == "BCE":
             self.loss_fn = torch.nn.BCELoss(reduction='mean')
         else:
             raise ValueError("Unsupported loss_type")
