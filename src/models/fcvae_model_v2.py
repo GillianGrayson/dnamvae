@@ -19,14 +19,15 @@ class FCVAEModelV2(LightningModule):
     """
 
     def __init__(
-        self,
-        n_input: int = 784,
-        n_latent: int = 256,
-        topology: int = 256,
-        kl_coeff: int = 256,
-        lr: float = 0.001,
-        weight_decay: float = 0.0005,
-        **kwargs
+            self,
+            n_input: int = 784,
+            n_latent: int = 256,
+            topology: int = 256,
+            loss_type: str = "BCE",
+            kl_coeff: int = 256,
+            lr: float = 0.001,
+            weight_decay: float = 0.0005,
+            **kwargs
     ):
         super().__init__()
 
@@ -35,6 +36,13 @@ class FCVAEModelV2(LightningModule):
         self.save_hyperparameters()
 
         self.model = FCVAENet(hparams=self.hparams)
+
+        if self.loss_type == "MSE":
+            self.loss_fn = torch.nn.MSELoss(reduction='mean')
+        elif self.loss_type == "BCE":
+            self.loss_fn = torch.nn.BCELoss(reduction='mean')
+        else:
+            raise ValueError("Unsupported loss_type")
 
     def forward(self, x: torch.Tensor):
         return self.model.forward_v2(x)
@@ -54,7 +62,7 @@ class FCVAEModelV2(LightningModule):
         z = self.model.v2_reparametrize(mu, log_var)
         x_hat = self.model.decoder(z)
 
-        recon_loss = F.mse_loss(x_hat, x, reduction='mean')
+        recon_loss = self.loss_fn(x_hat, x)
 
         loss = kl_final + recon_loss
 
@@ -67,7 +75,7 @@ class FCVAEModelV2(LightningModule):
 
     def training_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"train_{k}": v for k, v in logs.items()}
+        d = {f"train/{k}": v for k, v in logs.items()}
         self.log_dict(d)
 
         # we can return here dict with any tensors
@@ -81,7 +89,7 @@ class FCVAEModelV2(LightningModule):
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"val_{k}": v for k, v in logs.items()}
+        d = {f"val/{k}": v for k, v in logs.items()}
         self.log_dict(d)
         return logs
 
@@ -90,7 +98,7 @@ class FCVAEModelV2(LightningModule):
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"test_{k}": v for k, v in logs.items()}
+        d = {f"test/{k}": v for k, v in logs.items()}
         self.log_dict(d)
         return logs
 

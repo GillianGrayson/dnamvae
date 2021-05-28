@@ -11,6 +11,7 @@ class FCVAENet(nn.Module):
         self.n_latent = hparams['n_latent']
         self.topology = list(hparams['topology'])
         self.kl_coeff = hparams['kl_coeff']
+        self.loss_type = hparams['loss_type']
 
         self.encoder_topology = [self.n_input] + self.topology
         self.decoder_topology = [ self.n_latent] + self.topology[::-1]
@@ -29,7 +30,12 @@ class FCVAENet(nn.Module):
             layer = nn.Linear(self.decoder_topology[i], self.decoder_topology[i + 1])
             self.decoder_layers.append(nn.Sequential(layer, nn.BatchNorm1d(self.decoder_topology[i + 1]), nn.ReLU()))
         self.decoder_layers = nn.Sequential(*self.decoder_layers)
-        self.output_layer = nn.Sequential(nn.Linear(self.decoder_topology[-1], self.n_input), nn.Sigmoid())
+        if self.loss_type == "BCE":
+            self.output_layer = nn.Sequential(nn.Linear(self.decoder_topology[-1], self.n_input), nn.Sigmoid())
+        elif self.loss_type == "MSE":
+            self.output_layer = nn.Linear(self.decoder_topology[-1], self.n_input)
+        else:
+            raise ValueError("Unsupported loss_type")
         self.decoder = nn.Sequential(*[self.decoder_layers, self.output_layer])
 
     def encode(self,x):

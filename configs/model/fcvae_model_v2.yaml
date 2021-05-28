@@ -3,6 +3,7 @@ _target_: src.models.fcvae_model_v2.FCVAEModelV2
 n_input: 900075
 n_latent: 100
 topology: [150, 125]
+loss_type: "MSE"
 kl_coeff: 1.0
 lr: 0.01
 weight_decay: 0.005
