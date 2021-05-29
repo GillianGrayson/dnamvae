@@ -80,21 +80,16 @@ class FCVAEModelV1(LightningModule):
     def training_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
         d = {f"train/{k}": v for k, v in logs.items()}
-        self.log_dict(d)
-
-        # we can return here dict with any tensors
-        # and then read it in some callback or in training_epoch_end() below
-        # remember to always return loss from training_step, or else backpropagation will fail!
+        self.log_dict(d, on_step=False, on_epoch=True, logger=True)
         return logs
 
     def training_epoch_end(self, outputs: List[Any]):
-        # `outputs` is a list of dicts returned from `training_step()`
         pass
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
         d = {f"val/{k}": v for k, v in logs.items()}
-        self.log_dict(d)
+        self.log_dict(d, on_step=False, on_epoch=True, logger=True)
         return logs
 
     def validation_epoch_end(self, outputs: List[Any]):
@@ -103,7 +98,7 @@ class FCVAEModelV1(LightningModule):
     def test_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
         d = {f"test/{k}": v for k, v in logs.items()}
-        self.log_dict(d)
+        self.log_dict(d, on_step=False, on_epoch=True, logger=True)
         return logs
 
     def test_epoch_end(self, outputs: List[Any]):
