@@ -34,14 +34,14 @@ class FCVAEModelV2(LightningModule):
         # it also allows to access params with 'self.hparams' attribute
         self.save_hyperparameters()
 
-        self.model = FCVAENet(hparams=self.hparams)
-
-        if self.loss_type == "MSE":
+        if self.hparams.loss_type == "MSE":
             self.loss_fn = torch.nn.MSELoss(reduction='mean')
-        elif self.loss_type == "BCE":
+        elif self.hparams.loss_type == "BCE":
             self.loss_fn = torch.nn.BCELoss(reduction='mean')
         else:
             raise ValueError("Unsupported loss_type")
+
+        self.model = FCVAENet(hparams=self.hparams)
 
     def forward(self, x: torch.Tensor):
         return self.model.forward_v2(x)
