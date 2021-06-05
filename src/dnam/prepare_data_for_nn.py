@@ -6,13 +6,15 @@ import pickle
 import tqdm
 
 
+dataset = "GSE55763"
+
 path = f'E:/YandexDisk/Work/dnamvae/data'
 
 f = open(f'{path}/annotation/cpgs.pkl', 'rb')
 cpgs = pickle.load(f)
 f.close()
 
-f = open(f'{path}/datasets/GSE87571/data.pkl', 'rb')
+f = open(f'{path}/datasets/{dataset}/data.pkl', 'rb')
 raw_data = pickle.load(f)
 f.close()
 
@@ -29,7 +31,7 @@ for cpg in tqdm.tqdm(list(raw_data['beta'].columns.values), mininterval=1.0, des
 
 raw_data['beta'] = X
 
-f = open(f'{path}/datasets/GSE87571/data_nn.pkl', 'wb')
+f = open(f'{path}/datasets/{dataset}/data_nn.pkl', 'wb')
 pickle.dump(raw_data, f, pickle.HIGHEST_PROTOCOL)
 f.close()
 

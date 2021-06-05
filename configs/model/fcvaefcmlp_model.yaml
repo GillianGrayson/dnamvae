@@ -1,0 +1,9 @@
+_target_: src.models.fcvaefcmlp_model.FCVAEFCMLPModel
+
+fcvae_path: "E:/YandexDisk/Work/dnamvae/models/logs/runs/2021-05-30/00-14-06/checkpoints/epoch=581.ckpt"
+task: "regression"
+n_output: 1
+topology: [200, 100]
+dropout: 0.0
+lr: 0.001
+weight_decay: 0.0005

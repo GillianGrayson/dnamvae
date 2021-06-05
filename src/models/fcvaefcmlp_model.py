@@ -44,7 +44,7 @@ class FCVAEFCMLPModel(LightningModule):
         self.mlp_layers = []
         for i in range(len(self.topology) - 1):
             layer = nn.Linear(self.topology[i], self.topology[i + 1])
-            self.mlp_layers.append(nn.Sequential(layer, nn.ReLU(), nn.Dropout(dropout)))
+            self.mlp_layers.append(nn.Sequential(layer, nn.ReLU(), nn.BatchNorm1d(self.topology[i + 1]), nn.Dropout(dropout)))
         self.mlp_layers.append(nn.Linear(self.topology[-1], self.n_output))
 
         if task == "classification":
@@ -70,6 +70,8 @@ class FCVAEFCMLPModel(LightningModule):
     def step(self, batch: Any):
         x, y = batch
         out = self.forward(x)
+        batch_size = x.size(0)
+        y = y.view(batch_size, -1)
         loss = self.loss_fn(out, y)
 
         logs = {"loss": loss}

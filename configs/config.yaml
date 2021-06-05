@@ -3,7 +3,7 @@
 # specify here default training configuration
 defaults:
     - trainer: minimal.yaml
-    - model: fcvae_model_v2.yaml
+    - model: fcvaefcmlp_model.yaml
     - datamodule: dnam_datamodule.yaml
     - callbacks: default.yaml  # set this to null if you don't want to use callbacks
     - logger: many_loggers.yaml  # set logger here or use command line (e.g. `python run.py logger=wandb`)
