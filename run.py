@@ -13,6 +13,7 @@ def main(config: DictConfig):
     # Imports should be nested inside @hydra.main to optimize tab completion
     # Read more here: https://github.com/facebookresearch/hydra/issues/934
     from src.train import train
+    from src.train_cv import train_cv
     from src.utils import utils
 
     # A couple of optional utilities:
@@ -28,7 +29,12 @@ def main(config: DictConfig):
         utils.print_config(config, resolve=True)
 
     # Train model
-    return train(config)
+    is_cv = config.is_cv
+
+    if is_cv:
+        return train_cv(config)
+    else:
+        return train(config)
 
 
 if __name__ == "__main__":

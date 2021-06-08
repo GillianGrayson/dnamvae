@@ -1,5 +1,9 @@
 # @package _global_
 
+project_name: fcmlp_model
+is_cv: True
+n_splits: 5
+
 # specify here default training configuration
 defaults:
     - trainer: minimal.yaml
@@ -18,11 +22,12 @@ defaults:
     - override hydra/job_logging: colorlog
 
 
+
 # path to original working directory
 # hydra hijacks working directory by changing it to the current log directory,
 # so it's useful to have this path as a special variable
 # learn more here: https://hydra.cc/docs/next/tutorials/basic/running_your_app/working_directory
-work_dir: "E:/YandexDisk/Work/dnamvae/models" #${hydra:runtime.cwd}
+work_dir: "E:/YandexDisk/Work/dnamvae/models/${project_name}" #${hydra:runtime.cwd}
 
 
 # path to folder with data

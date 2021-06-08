@@ -48,8 +48,8 @@ class FCAEModel(LightningModule):
         return self.model.forward(x)
 
     def get_latent(self, x: torch.Tensor):
-        x = self.model.encode(x)
-        return x
+        z = self.model.encode(x)
+        return z
 
     def step(self, batch: Any):
         x, y = batch

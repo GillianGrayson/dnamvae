@@ -64,12 +64,12 @@ class FCMLPModel(LightningModule):
         self.accuracy = Accuracy()
 
     def forward(self, x: torch.Tensor):
-        x = self.mlp(x)
-        return x
+        z = self.mlp(x)
+        return z
 
     def get_probabilities(self, x: torch.Tensor):
-        x = self.mlp(x)
-        return torch.softmax(x, dim=1)
+        z = self.mlp(x)
+        return torch.softmax(z, dim=1)
 
     def step(self, batch: Any):
         x, y = batch

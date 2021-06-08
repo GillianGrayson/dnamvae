@@ -36,10 +36,10 @@ class FCAENet(nn.Module):
         self.decoder = nn.Sequential(*[self.decoder_layers, self.output_layer])
 
     def encode(self,x):
-        x = self.encoder(x)
-        return x
+        out = self.encoder(x)
+        return out
 
     def forward(self, x):
-        x = self.encode(x)
-        x = self.decoder(x)
-        return x
+        out = self.encode(x)
+        out = self.decoder(out)
+        return out

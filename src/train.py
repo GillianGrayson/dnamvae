@@ -27,6 +27,8 @@ def train(config: DictConfig) -> Optional[float]:
     if "seed" in config:
         seed_everything(config.seed)
 
+    config.logger.wandb["project"] = config.project_name + "_${now:%Y-%m-%d_%H-%M-%S}"
+
     # Init Lightning datamodule
     log.info(f"Instantiating datamodule <{config.datamodule._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(config.datamodule)

@@ -49,10 +49,16 @@ class DNAmDataModule(LightningDataModule):
 
         dataset = DNAmDataset(self.data, self.outcome)
 
-        total_count = self.data['beta'].shape[0]
-        train_count = int(np.floor(total_count * self.train_val_test_split[0]))
-        valid_count = int(np.floor(total_count * self.train_val_test_split[1]))
-        test_count = total_count - train_count - valid_count
+        if self.train_val_test_split[2] == 0:
+            total_count = self.data['beta'].shape[0]
+            train_count = int(np.floor(total_count * self.train_val_test_split[0]))
+            valid_count = total_count - train_count
+            test_count = 0
+        else:
+            total_count = self.data['beta'].shape[0]
+            train_count = int(np.floor(total_count * self.train_val_test_split[0]))
+            valid_count = int(np.floor(total_count * self.train_val_test_split[1]))
+            test_count = total_count - train_count - valid_count
 
         log.info(f"total_count: {total_count}")
         log.info(f"train_count: {train_count}")
