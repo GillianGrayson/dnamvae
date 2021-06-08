@@ -2,7 +2,7 @@ from torch import nn
 import torch
 
 
-class FCVAENet(nn.Module):
+class FCAENet(nn.Module):
 
     def __init__(self, hparams: dict):
         super().__init__()
@@ -10,7 +10,6 @@ class FCVAENet(nn.Module):
         self.n_input = hparams['n_input']
         self.n_latent = hparams['n_latent']
         self.topology = list(hparams['topology'])
-        self.kl_coeff = hparams['kl_coeff']
         self.loss_type = hparams['loss_type']
 
         self.encoder_topology = [self.n_input] + self.topology
@@ -20,10 +19,8 @@ class FCVAENet(nn.Module):
         for i in range(len(self.encoder_topology) - 1):
             layer = nn.Linear(self.encoder_topology[i], self.encoder_topology[i + 1])
             self.encoder_layers.append(nn.Sequential(layer, nn.BatchNorm1d(self.encoder_topology[i + 1]), nn.ReLU()))
+        self.encoder_layers.append(nn.Linear(self.encoder_topology[-1], self.n_latent))
         self.encoder = nn.Sequential(*self.encoder_layers)
-
-        self.hidden_mu = nn.Linear(self.encoder_topology[-1], self.n_latent)
-        self.hidden_log_var = nn.Linear(self.encoder_topology[-1], self.n_latent)
 
         self.decoder_layers = []
         for i in range(len(self.decoder_topology) - 1):
@@ -39,29 +36,10 @@ class FCVAENet(nn.Module):
         self.decoder = nn.Sequential(*[self.decoder_layers, self.output_layer])
 
     def encode(self,x):
-        hidden = self.encoder(x)
-        mu = self.hidden_mu(hidden)
-        log_var = self.hidden_log_var(hidden)
-        return mu,log_var
+        x = self.encoder(x)
+        return x
 
-    def forward_v1(self, x):
-        mu, log_var = self.encode(x)
-        p, q, z = self.v1_reparametrize(mu, log_var)
-        return self.decoder(z)
-
-    def forward_v2(self, x):
-        mu, log_var = self.encode(x)
-        z = self.v2_reparametrize(mu, log_var)
-        return self.decoder(z)
-
-    def v1_reparametrize(self, mu, log_var):
-        std = torch.exp(0.5 * log_var)
-        p = torch.distributions.Normal(torch.zeros_like(mu), torch.ones_like(std))
-        q = torch.distributions.Normal(mu, std)
-        z = q.rsample()
-        return p, q, z
-
-    def v2_reparametrize(self, mu, log_var):
-        std = torch.exp(0.5 * log_var)
-        eps = torch.randn_like(std)
-        return mu + std * eps
+    def forward(self, x):
+        x = self.encode(x)
+        x = self.decoder(x)
+        return x

@@ -3,6 +3,6 @@
 defaults:
     - csv.yaml
     - wandb.yaml
-    - tensorboard.yaml
+    # - tensorboard.yaml
     # - neptune.yaml
     # - comet.yaml

@@ -1,10 +1,14 @@
 from typing import Any, List
-import torch
 from pytorch_lightning import LightningModule
-from src.models.modules.fcvae_net import FCVAENet
+from src.models.fcvae_model_v1 import FCVAEModelV1
+from src.models.fcvae_model_v2 import FCVAEModelV2
+from src.models.fcae_model import FCAEModel
+from torch import nn
+import torch
+from torchmetrics.classification.accuracy import Accuracy
 
 
-class FCVAEModelV2(LightningModule):
+class FCMLPModel(LightningModule):
     """
     A LightningModule organizes your PyTorch code into 5 sections:
         - Computations (init).
@@ -20,58 +24,66 @@ class FCVAEModelV2(LightningModule):
     def __init__(
             self,
             n_input: int = 784,
-            n_latent: int = 256,
-            topology: int = 256,
+            topology: List[int] = None,
+            n_output: int = 1,
+            task: str = "regression",
+            dropout: float = 0.1,
             loss_type: str = "MSE",
-            kl_coeff: int = 256,
             lr: float = 0.001,
             weight_decay: float = 0.0005,
             **kwargs
     ):
         super().__init__()
-
-        # this line ensures params passed to LightningModule will be saved to ckpt
-        # it also allows to access params with 'self.hparams' attribute
         self.save_hyperparameters()
 
-        if self.hparams.loss_type == "MSE":
-            self.loss_fn = torch.nn.MSELoss(reduction='mean')
-        elif self.hparams.loss_type == "BCE":
-            self.loss_fn = torch.nn.BCELoss(reduction='mean')
-        elif self.hparams.loss_type == "L1Loss":
-            self.loss_fn = torch.nn.L1Loss(reduction='mean')
-        else:
-            raise ValueError("Unsupported loss_type")
+        self.task = task
+        self.n_output = n_output
+        self.topology = [n_input] + list(topology) + [n_output]
 
-        self.model = FCVAENet(hparams=self.hparams)
+        self.mlp_layers = []
+        for i in range(len(self.topology) - 2):
+            layer = nn.Linear(self.topology[i], self.topology[i + 1])
+            self.mlp_layers.append(nn.Sequential(layer, nn.LeakyReLU(), nn.Dropout(dropout)))
+        output_layer = nn.Linear(self.topology[-2], self.topology[-1])
+        self.mlp_layers.append(output_layer)
+
+        if task == "classification":
+            self.loss_fn = torch.nn.CrossEntropyLoss(reduction='mean')
+            if n_output < 2:
+                raise ValueError(f"Classification with {n_output} classes")
+        elif task == "regression":
+            if self.hparams.loss_type == "MSE":
+                self.loss_fn = torch.nn.MSELoss(reduction='mean')
+            elif self.hparams.loss_type == "L1Loss":
+                self.loss_fn = torch.nn.L1Loss(reduction='mean')
+            else:
+                raise ValueError("Unsupported loss_type")
+
+        self.mlp = nn.Sequential(*self.mlp_layers)
+
+        self.accuracy = Accuracy()
 
     def forward(self, x: torch.Tensor):
-        return self.model.forward_v2(x)
+        x = self.mlp(x)
+        return x
 
-    def get_latent(self, x: torch.Tensor):
-        mu, log_var = self.model.encode(x)
-        z = self.model.v2_reparametrize(mu, log_var)
-        return z
+    def get_probabilities(self, x: torch.Tensor):
+        x = self.mlp(x)
+        return torch.softmax(x, dim=1)
 
     def step(self, batch: Any):
         x, y = batch
+        out = self.forward(x)
+        batch_size = x.size(0)
+        y = y.view(batch_size, -1)
+        loss = self.loss_fn(out, y)
 
-        mu, log_var = self.model.encode(x)
+        logs = {"loss": loss}
+        if self.task == "classification":
+            out_tag = torch.argmax(out, dim=1)
+            acc = self.accuracy(out_tag, y)
+            logs["acc"] = acc
 
-        kl_final = (-0.5 * (1 + log_var - mu ** 2 - torch.exp(log_var)).sum(dim=1)).mean(dim=0)
-
-        z = self.model.v2_reparametrize(mu, log_var)
-        x_hat = self.model.decoder(z)
-
-        recon_loss = self.loss_fn(x_hat, x)
-
-        loss = kl_final + recon_loss
-
-        logs = {
-            "loss": loss,
-            "recon_loss": recon_loss,
-            "kl_loss": kl_final
-        }
         return loss, logs
 
     def training_step(self, batch: Any, batch_idx: int):
@@ -94,7 +106,7 @@ class FCVAEModelV2(LightningModule):
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, logs = self.step(batch)
-        d = {f"test/{k}": v for k, v in logs.items()}
+        d = {f"test_{k}": v for k, v in logs.items()}
         self.log_dict(d, on_step=False, on_epoch=True, logger=True)
         return logs
 

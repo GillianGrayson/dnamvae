@@ -1,8 +1,8 @@
 _target_: src.datamodules.dnam_datamodule.DNAmDataModule
 
-data_fn: "${data_dir}/GSE87571/data_nn.pkl"
+data_fn: "${data_dir}/combo/GSE40279_GSE87571_EPIC_GSE55763/vt_score_more_0.005_none/data_nn.pkl"
 outcome: "age"
 batch_size: 5
-train_val_test_split: [529, 100, 100]
+train_val_test_split: [0.7, 0.2, 0.1]
 num_workers: 0
 pin_memory: False

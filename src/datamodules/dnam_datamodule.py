@@ -3,7 +3,10 @@ from .datasets.dnam_dataset import DNAmDataset
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset, random_split
 import pickle
+import numpy as np
+from src.utils import utils
 
+log = utils.get_logger(__name__)
 
 class DNAmDataModule(LightningDataModule):
 
@@ -11,7 +14,7 @@ class DNAmDataModule(LightningDataModule):
             self,
             data_fn: str = "E:/YandexDisk/Work/dnamvae/data/datasets/unn/data_nn.pkl",
             outcome: str = 'Age',
-            train_val_test_split: Tuple[int, int, int] = (130, 30, 24),
+            train_val_test_split: Tuple[float, float, float] = (0.7, 0.2, 0.1),
             batch_size: int = 64,
             num_workers: int = 0,
             pin_memory: bool = False,
@@ -46,8 +49,18 @@ class DNAmDataModule(LightningDataModule):
 
         dataset = DNAmDataset(self.data, self.outcome)
 
+        total_count = self.data['beta'].shape[0]
+        train_count = int(np.floor(total_count * self.train_val_test_split[0]))
+        valid_count = int(np.floor(total_count * self.train_val_test_split[1]))
+        test_count = total_count - train_count - valid_count
+
+        log.info(f"total_count: {total_count}")
+        log.info(f"train_count: {train_count}")
+        log.info(f"valid_count: {valid_count}")
+        log.info(f"test_count: {test_count}")
+
         self.data_train, self.data_val, self.data_test = random_split(
-            dataset, self.train_val_test_split
+            dataset, [train_count, valid_count, test_count]
         )
 
     def train_dataloader(self):

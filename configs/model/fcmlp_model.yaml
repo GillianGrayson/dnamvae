@@ -1,0 +1,10 @@
+_target_: src.models.fcmlp_model.FCMLPModel
+
+n_input: 107953
+topology: [512, 256, 128, 64]
+n_output: 1
+task: "regression"
+dropout: 0.0
+loss_type: "MSE"
+lr: 0.001
+weight_decay: 0.0005

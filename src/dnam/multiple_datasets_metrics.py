@@ -13,7 +13,7 @@ th = 0.0
 
 path = f"E:/YandexDisk/Work/dnamvae/data/datasets"
 outcome = "age"
-datasets = ["GSE40279", "GSE87571", "EPIC", "GSE55763"]
+datasets = ["GSE87571", "GSE55763"]
 
 for d_id, d in enumerate(datasets):
     f = open(f"{path}/{d}/data_nn.pkl", 'rb')
@@ -53,19 +53,19 @@ d["lap_score"] = lap_metrics
 df = pd.DataFrame(d)
 df.to_excel(f"{save_path}/{'_'.join(datasets)}.xlsx", index=False)
 
-spec_metrics = SPEC.spec(beta.to_numpy())
-spec_idx = SPEC.feature_ranking(spec_metrics)
-d["spec_metrics"] = spec_metrics
-
-df = pd.DataFrame(d)
-df.to_excel(f"{save_path}/{'_'.join(datasets)}.xlsx", index=False)
-
-udfs_metrics = UDFS.udfs(beta.to_numpy())
-udfs_idx = feature_ranking(udfs_metrics)
-d["udfs_metrics"] = udfs_metrics
-
-df = pd.DataFrame(d)
-df.to_excel(f"{save_path}/{'_'.join(datasets)}.xlsx", index=False)
+# spec_metrics = SPEC.spec(beta.to_numpy())
+# spec_idx = SPEC.feature_ranking(spec_metrics)
+# d["spec_metrics"] = spec_metrics
+#
+# df = pd.DataFrame(d)
+# df.to_excel(f"{save_path}/{'_'.join(datasets)}.xlsx", index=False)
+#
+# udfs_metrics = UDFS.udfs(beta.to_numpy())
+# udfs_idx = feature_ranking(udfs_metrics)
+# d["udfs_metrics"] = udfs_metrics
+#
+# df = pd.DataFrame(d)
+# df.to_excel(f"{save_path}/{'_'.join(datasets)}.xlsx", index=False)
 
 
 

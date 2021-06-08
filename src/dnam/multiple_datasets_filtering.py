@@ -2,11 +2,12 @@ import pandas as pd
 import os
 import pickle
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-
-th = 0.001
-lme = "more"
 m = "vt_score"
+lme = "more"
+th = 0.005
+scaler_type = 'none'
 
 path = f"E:/YandexDisk/Work/dnamvae/data/datasets"
 outcome = "age"
@@ -24,7 +25,7 @@ cpgs = cpgs[idx]
 
 df_save = df.loc[idx, :]
 
-save_path = f"{path}/combo/{'_'.join(datasets)}/{m}_{lme}_{str(th)}"
+save_path = f"{path}/combo/{'_'.join(datasets)}/{m}_{lme}_{str(th)}_{scaler_type}"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -42,7 +43,15 @@ for d_id, d in enumerate(datasets):
         pheno = pheno.append(data["pheno"].filter([outcome], axis=1))
 
 beta = beta[cpgs]
-data["beta"] = beta
+
+if scaler_type == 'minmax':
+    scaler = MinMaxScaler()
+    beta = pd.DataFrame(scaler.fit_transform(beta.values), columns=beta.columns, index=beta.index)
+elif scaler_type == 'standard':
+    scaler = StandardScaler()
+    beta = pd.DataFrame(scaler.fit_transform(beta.values), columns=beta.columns, index=beta.index)
+
+data = {"beta": beta, "pheno": pheno}
 
 f = open(f'{save_path}/data_nn.pkl', 'wb')
 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)

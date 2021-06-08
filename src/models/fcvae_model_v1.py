@@ -39,6 +39,8 @@ class FCVAEModelV1(LightningModule):
             self.loss_fn = torch.nn.MSELoss(reduction='mean')
         elif self.hparams.loss_type == "BCE":
             self.loss_fn = torch.nn.BCELoss(reduction='mean')
+        elif self.hparams.loss_type == "L1Loss":
+            self.loss_fn = torch.nn.L1Loss(reduction='mean')
         else:
             raise ValueError("Unsupported loss_type")
 
