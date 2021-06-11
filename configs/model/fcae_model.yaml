@@ -1,8 +1,8 @@
 _target_: src.models.fcae_model.FCAEModel
 
 n_input: 107953
-n_latent: 200
-topology: [800, 400]
+n_latent: 128
+topology: [512, 256]
 loss_type: "L1Loss"
 lr: 0.0001
 weight_decay: 0.00005

@@ -39,9 +39,13 @@ def train_cv(config: DictConfig) -> Optional[float]:
     for fold_idx, loaders in enumerate(cv_datamodule.split()):
 
         config.logger.csv["version"] = f"fold_{fold_idx}"
+        config.callbacks.model_checkpoint["filename"] = ckpt_name + f"_fold_{fold_idx}"
+
         config.logger.wandb["version"] = f"fold_{fold_idx}"
         config.logger.wandb["project"] = config.project_name + "_${now:%Y-%m-%d_%H-%M-%S}"
-        config.callbacks.model_checkpoint["filename"] = ckpt_name + f"_fold_{fold_idx}"
+
+        #config.logger.comet["experiment_name"] = f"fold_{fold_idx}"
+        #config.logger.comet["project_name"] = config.project_name + "_${now:%Y-%m-%d_%H-%M-%S}"
 
         # Init Lightning model
         log.info(f"Instantiating model <{config.model._target_}>")
