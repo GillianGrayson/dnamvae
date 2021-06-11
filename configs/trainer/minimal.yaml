@@ -9,5 +9,5 @@ max_epochs: 1000
 weights_summary: null
 progress_bar_refresh_rate: 10
 
-# resume_from_checkpoint: "E:/YandexDisk/Work/dnamvae/models/logs/runs/2021-05-26/02-14-39/checkpoints/epoch=643.ckpt"
+# resume_from_checkpoint: "E:/YandexDisk/Work/dnamvae/models/fcmlp_model/logs/runs/2021-06-09/01-45-07/checkpoints/epoch=223_fold_1.ckpt"
 resume_from_checkpoint: null

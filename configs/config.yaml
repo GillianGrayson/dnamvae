@@ -1,6 +1,6 @@
 # @package _global_
 
-project_name: fcae_mlp_model
+project_name: fcmlp
 is_cv: True
 n_splits: 5
 seed: 1337
@@ -8,7 +8,7 @@ seed: 1337
 # specify here default training configuration
 defaults:
     - trainer: minimal.yaml
-    - model: extractor_mlp_model.yaml
+    - model: fcmlp_model.yaml
     - datamodule: dnam_datamodule.yaml
     - callbacks: default.yaml  # set this to null if you don't want to use callbacks
     - logger: many_loggers.yaml  # set logger here or use command line (e.g. `python run.py logger=wandb`)
@@ -29,7 +29,6 @@ defaults:
 # so it's useful to have this path as a special variable
 # learn more here: https://hydra.cc/docs/next/tutorials/basic/running_your_app/working_directory
 work_dir: "E:/YandexDisk/Work/dnamvae/models/${project_name}" #${hydra:runtime.cwd}
-
 
 # path to folder with data
 data_dir: "E:/YandexDisk/Work/dnamvae/data/datasets"

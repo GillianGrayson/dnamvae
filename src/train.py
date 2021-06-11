@@ -27,7 +27,7 @@ def train(config: DictConfig) -> Optional[float]:
     if "seed" in config:
         seed_everything(config.seed)
 
-    config.logger.wandb["project"] = config.project_name + "_${now:%Y-%m-%d_%H-%M-%S}"
+    config.logger.wandb["project"] = config.project_name
 
     # Init Lightning datamodule
     log.info(f"Instantiating datamodule <{config.datamodule._target_}>")
@@ -36,6 +36,7 @@ def train(config: DictConfig) -> Optional[float]:
     # Init Lightning model
     log.info(f"Instantiating model <{config.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(config.model)
+    print(model)
 
     # Init Lightning callbacks
     callbacks: List[Callback] = []
@@ -77,7 +78,11 @@ def train(config: DictConfig) -> Optional[float]:
     # Evaluate model on test set after training
     if not config.trainer.get("fast_dev_run"):
         log.info("Starting testing!")
-        trainer.test()
+        test_dataloader = datamodule.test_dataloader()
+        if len(test_dataloader) > 0:
+            trainer.test(model, test_dataloader)
+        else:
+            log.info("Test data is empty!")
 
     # Make sure everything closed properly
     log.info("Finalizing!")
