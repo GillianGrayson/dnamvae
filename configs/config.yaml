@@ -1,9 +1,10 @@
 # @package _global_
 
-project_name: fcmlp
-is_cv: True
-n_splits: 5
+project_name: interpretation
 seed: 1337
+
+is_cv: False
+n_splits: 5
 
 # specify here default training configuration
 defaults:

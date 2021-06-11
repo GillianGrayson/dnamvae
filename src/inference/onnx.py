@@ -4,7 +4,7 @@ from src.datamodules.datasets.dnam_dataset import DNAmDataset
 from torch.utils.data import DataLoader
 
 
-def inference():
+def save_onnx():
 
     model_type = "FCMLPModel"
 
@@ -47,4 +47,4 @@ def inference():
     model.to_onnx(f"{model_path}/checkpoints/epoch=223_fold_1.onnx", x, export_params=True)
 
 if __name__ == "__main__":
-    inference()
+    save_onnx()

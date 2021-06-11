@@ -1,0 +1,21 @@
+# @package _global_
+
+# to execute this experiment run:
+# python run.py experiment=interpretation.yaml
+
+defaults:
+    - override /model: fcmlp_model.yaml
+    - override /datamodule: dnam_datamodule.yaml
+    - override /trainer: null  # override trainer to null so it's not loaded from main config defaults...
+    - override /callbacks: null
+    - override /logger: null
+
+project_name: interpretation
+seed: 1337
+is_cv: null
+n_splits: null
+
+datamodule:
+    outcome: "age"
+    batch_size: 100
+    train_val_test_split: [0.8, 0.2, 0.0]
