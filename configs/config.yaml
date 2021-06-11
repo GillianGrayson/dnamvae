@@ -1,6 +1,6 @@
 # @package _global_
 
-project_name: fcvae_mlp_model
+project_name: fcae_mlp_model
 is_cv: True
 n_splits: 5
 seed: 1337
