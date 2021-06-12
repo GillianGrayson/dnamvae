@@ -96,4 +96,3 @@ fn_fig = sprintf('%s/shap_dataset_barh_%d_%d', path_to_shap, num_subjects, num_f
 oqs_save_fig(fig, fn_fig)
 
 
-
