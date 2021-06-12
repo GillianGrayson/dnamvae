@@ -84,7 +84,7 @@ def main(config: DictConfig):
         d[f"{feat}_shap"] = curr_shap
 
     df_features = pd.DataFrame(d)
-    df_features.to_excel(f"{save_dir}/shap_values_{config.datamodule.batch_size}_{num_top_features}.xlsx", index=False)
+    df_features.to_excel(f"{save_dir}/interpretation/shap_values_{config.datamodule.batch_size}_{num_top_features}.xlsx", index=False)
 
 
 if __name__ == "__main__":
