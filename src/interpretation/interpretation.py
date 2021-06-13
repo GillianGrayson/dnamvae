@@ -46,42 +46,67 @@ def main(config: DictConfig):
     datamodule: LightningDataModule = hydra.utils.instantiate(config.datamodule)
     datamodule.setup()
 
-    train_dataloader = datamodule.train_dataloader()
-    val_dataloader = datamodule.val_dataloader()
-    test_dataloader = datamodule.test_dataloader()
+    train_dataloader = datamodule.train_dataloader().dataset
+    val_dataloader = datamodule.val_dataloader().dataset
+    test_dataloader = datamodule.test_dataloader().dataset
+    dataset = ConcatDataset([train_dataloader, val_dataloader, test_dataloader])
+    dataloader = DataLoader(
+        dataset,
+        batch_size=config.datamodule.batch_size,
+        num_workers=config.datamodule.num_workers,
+        pin_memory=config.datamodule.pin_memory,
+        shuffle=True
+    )
 
-    batch = next(iter(train_dataloader))
-    background, _, indexes = batch
-    outs = model(background).flatten()
+    batch_id = 0
+    d = {}
+    for background, _, indexes in tqdm(dataloader):
 
-    e = shap.DeepExplainer(model, background)
-    shap_values = e.shap_values(background)
+        outs = model(background).flatten()
 
-    shap_abs = np.absolute(shap_values)
-    shap_mean_abs = np.mean(shap_abs, axis=0)
-    order = np.argsort(shap_mean_abs)[::-1]
+        if batch_id == 0:
+            e = shap.DeepExplainer(model, background)
 
-    subject_indices = indexes.flatten().cpu().detach().numpy()
-    subjects = datamodule.data["beta"].index.values[subject_indices]
-    outcomes = datamodule.data["pheno"].loc[subjects, config.datamodule.outcome].to_numpy()
-    features = datamodule.data["beta"].columns.values
+        shap_values = e.shap_values(background)
 
-    features_best = features[order[0:num_top_features]]
-    betas = background.cpu().detach().numpy()
-    preds = outs.cpu().detach().numpy()
+        if batch_id == 0:
+            shap_abs = np.absolute(shap_values)
+            shap_mean_abs = np.mean(shap_abs, axis=0)
+            order = np.argsort(shap_mean_abs)[::-1]
+            features = datamodule.data["beta"].columns.values
+            features_best = features[order[0:num_top_features]]
 
-    d = {
-        'subject': subjects,
-        'outcome': outcomes,
-        'preds': preds
-    }
+        subject_indices = indexes.flatten().cpu().detach().numpy()
+        subjects = datamodule.data["beta"].index.values[subject_indices]
+        outcomes = datamodule.data["pheno"].loc[subjects, config.datamodule.outcome].to_numpy()
 
-    for f_id in range(0, num_top_features):
-        feat = features_best[f_id]
-        curr_beta = betas[:, order[f_id]]
-        curr_shap = shap_values[:, order[f_id]]
-        d[f"{feat}_beta"] = curr_beta
-        d[f"{feat}_shap"] = curr_shap
+        betas = background.cpu().detach().numpy()
+        preds = outs.cpu().detach().numpy()
+
+        if batch_id == 0:
+            d['subject'] = subjects
+            d['outcome'] = outcomes
+            d['preds'] = preds
+
+            for f_id in range(0, num_top_features):
+                feat = features_best[f_id]
+                curr_beta = betas[:, order[f_id]]
+                curr_shap = shap_values[:, order[f_id]]
+                d[f"{feat}_beta"] = curr_beta
+                d[f"{feat}_shap"] = curr_shap
+        else:
+            d['subject'] = np.append(d['subject'], subjects)
+            d['outcome'] = np.append(d['outcome'], outcomes)
+            d['preds'] = np.append(d['preds'], preds)
+
+            for f_id in range(0, num_top_features):
+                feat = features_best[f_id]
+                curr_beta = betas[:, order[f_id]]
+                curr_shap = shap_values[:, order[f_id]]
+                d[f"{feat}_beta"] = np.append(d[f"{feat}_beta"], curr_beta)
+                d[f"{feat}_shap"] = np.append(d[f"{feat}_shap"], curr_shap)
+
+        batch_id += 1
 
     df_features = pd.DataFrame(d)
     df_features.to_excel(f"{save_dir}/interpretation/shap_values_{config.datamodule.batch_size}_{num_top_features}.xlsx", index=False)

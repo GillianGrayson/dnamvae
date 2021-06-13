@@ -1,6 +1,10 @@
 clear all;
 
 path_to_shap = 'E:/YandexDisk/Work/dnamvae/data/datasets/combo/GSE40279_GSE87571_EPIC_GSE55763/vt_score_more_0.005_none/interpretation';
+save_path = sprintf('%s/subject', path_to_shap);
+if not(isfolder(save_path))
+    mkdir(save_path)
+end
 path_to_ann = 'E:/YandexDisk/Work/dnamvae/data/annotation';
 
 ann_type = 'full';
@@ -8,7 +12,7 @@ fn = sprintf('%s/ann_%s.xlsx', path_to_ann, ann_type);
 ann = readtable(fn, 'ReadRowNames', true);
 
 num_features = 100;
-num_subjects = 300;
+num_subjects = 500;
 
 num_features_to_plot = 10;
 num_subjects_to_plot = 10;
@@ -64,7 +68,7 @@ for s_id = 1:num_subjects_to_plot
     xlabel('SHAP value', 'Interpreter', 'latex');
     ylabel('', 'Interpreter', 'latex');
     title(sprintf('$Age = %0.2f$', tbl{s_id, 'outcome'}), 'interpreter', 'latex')
-    fn_fig = sprintf('%s/shap_subject_barh_%d_%d_%d', path_to_shap, s_id, num_subjects, num_features);
+    fn_fig = sprintf('%s/shap_subject_barh_%d_%d_%d', save_path, s_id, num_subjects, num_features);
     oqs_save_fig(fig, fn_fig)
 
 end
