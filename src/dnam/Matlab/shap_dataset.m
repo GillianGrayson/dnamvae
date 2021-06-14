@@ -13,7 +13,7 @@ fn = sprintf('%s/ann_%s.xlsx', path_to_ann, ann_type);
 ann = readtable(fn, 'ReadRowNames', true);
 
 num_features = 100;
-num_subjects = 500;
+num_subjects = 1000;
 
 num_features_to_plot = 10;
 opacity = 0.65;

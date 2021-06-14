@@ -12,7 +12,7 @@ fn = sprintf('%s/ann_%s.xlsx', path_to_ann, ann_type);
 ann = readtable(fn, 'ReadRowNames', true);
 
 num_features = 100;
-num_subjects = 500;
+num_subjects = 1000;
 outcome = 'age';
 
 num_features_to_plot = 10;
@@ -42,7 +42,7 @@ for cpg_id = 1:num_features_to_plot
     cg_beta = tbl{:, features_beta(cpg_id)};
     cg_beta_scale = rescale(cg_beta);
     cg_shap = tbl{:, features_shap(cpg_id)};
-    out_real = tbl{:, 'outcome'};
+    out_real = tbl{:, 'preds'};
     
     x = cg_beta;
     y = cg_shap;

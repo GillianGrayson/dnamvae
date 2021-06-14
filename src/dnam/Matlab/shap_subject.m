@@ -12,10 +12,10 @@ fn = sprintf('%s/ann_%s.xlsx', path_to_ann, ann_type);
 ann = readtable(fn, 'ReadRowNames', true);
 
 num_features = 100;
-num_subjects = 500;
+num_subjects = 1000;
 
 num_features_to_plot = 10;
-num_subjects_to_plot = 10;
+num_subjects_to_plot = 100;
 
 fn = sprintf('%s/shap_values_%d_%d.xlsx', path_to_shap, num_subjects, num_features);
 opts = detectImportOptions(fn);
@@ -67,7 +67,7 @@ for s_id = 1:num_subjects_to_plot
     ax.YAxis.FontSize = 20;
     xlabel('SHAP value', 'Interpreter', 'latex');
     ylabel('', 'Interpreter', 'latex');
-    title(sprintf('$Age = %0.2f$', tbl{s_id, 'outcome'}), 'interpreter', 'latex')
+    title(sprintf('$Age = %0.2f$', tbl{s_id, 'preds'}), 'interpreter', 'latex')
     fn_fig = sprintf('%s/shap_subject_barh_%d_%d_%d', save_path, s_id, num_subjects, num_features);
     oqs_save_fig(fig, fn_fig)
 
