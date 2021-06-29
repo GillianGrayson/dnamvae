@@ -54,7 +54,7 @@ class FCVAEModelV2(LightningModule):
         return z
 
     def step(self, batch: Any):
-        x, y = batch
+        x, y, ind = batch
 
         mu, log_var = self.model.encode(x)
 

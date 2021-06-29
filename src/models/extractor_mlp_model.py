@@ -93,7 +93,7 @@ class ExtractorFCMLPModel(LightningModule):
         return torch.softmax(x, dim=1)
 
     def step(self, batch: Any):
-        x, y = batch
+        x, y, ind = batch
         out = self.forward(x)
         batch_size = x.size(0)
         y = y.view(batch_size, -1)

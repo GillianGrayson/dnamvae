@@ -52,7 +52,7 @@ class FCAEModel(LightningModule):
         return z
 
     def step(self, batch: Any):
-        x, y = batch
+        x, y, ind = batch
         x_hat = self.model(x)
         loss = self.loss_fn(x_hat, x)
         logs = {

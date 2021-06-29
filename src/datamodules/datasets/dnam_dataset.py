@@ -28,22 +28,7 @@ class DNAmDataset(Dataset):
         x = self.X.iloc[idx].to_numpy()
         y = self.y[idx]
 
-        return (x, y)
-
-    def __len__(self):
-        return self.num_subjects
-
-
-class DNAmDatasetIndexRetrieve(DNAmDataset):
-
-    def __init__(self, data: dict, outcome: str = 'Age'):
-        super().__init__(data, outcome)
-
-    def __getitem__(self, idx: int):
-        x = self.X.iloc[idx].to_numpy()
-        y = self.y[idx]
-
         return (x, y, idx)
 
     def __len__(self):
-        return super().__len__()
+        return self.num_subjects

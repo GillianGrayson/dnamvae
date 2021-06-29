@@ -55,7 +55,7 @@ class FCVAEModelV1(LightningModule):
         return z
 
     def step(self, batch: Any):
-        x, y = batch
+        x, y, ind = batch
 
         mu, log_var = self.model.encode(x)
         p, q, z =  self.model.v1_reparametrize(mu, log_var)

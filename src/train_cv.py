@@ -5,7 +5,7 @@ from pytorch_lightning import seed_everything
 import hydra
 from omegaconf import DictConfig
 from src.utils import utils
-from src.utils.cv.data_module import KFoldCVDataModule
+from src.datamodules.cross_validation import KFoldCVDataModule
 
 
 log = utils.get_logger(__name__)

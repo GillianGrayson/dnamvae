@@ -18,7 +18,6 @@ class DNAmDataModule(LightningDataModule):
             batch_size: int = 64,
             num_workers: int = 0,
             pin_memory: bool = False,
-            retrieve_index: bool = False,
             **kwargs,
     ):
         super().__init__()
@@ -29,7 +28,6 @@ class DNAmDataModule(LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
-        self.retrieve_index = retrieve_index
 
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
@@ -49,10 +47,7 @@ class DNAmDataModule(LightningDataModule):
         # self.dims is returned when you call datamodule.size()
         self.dims = (1, self.data['beta'].shape[1])
 
-        if self.retrieve_index == True:
-            dataset = DNAmDatasetIndexRetrieve(self.data, self.outcome)
-        else:
-            dataset = DNAmDataset(self.data, self.outcome)
+        dataset = DNAmDataset(self.data, self.outcome)
 
         if self.train_val_test_split[2] == 0:
             total_count = self.data['beta'].shape[0]

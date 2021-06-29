@@ -19,4 +19,3 @@ datamodule:
     outcome: "age"
     batch_size: 1000
     train_val_test_split: [0.8, 0.2, 0.0]
-    retrieve_index: True

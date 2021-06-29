@@ -5,4 +5,3 @@ outcome: "Age"
 batch_size: 16
 num_workers: 0
 pin_memory: False
-retrieve_index: False
