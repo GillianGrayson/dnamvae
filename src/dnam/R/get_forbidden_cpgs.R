@@ -1,40 +1,12 @@
 rm(list=ls())
 
-.libPaths()
 
 if (!requireNamespace("BiocManager", quietly=TRUE))
   install.packages("BiocManager")
-BiocManager::install("DMRcate")
-BiocManager::install("methylumi")
 BiocManager::install("ChAMP")
-BiocManager::install("minfi")
-BiocManager::install("minfiData")
-BiocManager::install("wateRmelon")
-BiocManager::install("shinyMethyl")
-BiocManager::install("FlowSorted.Blood.EPIC")
-BiocManager::install("FlowSorted.Blood.450k")
-BiocManager::install("FlowSorted.DLPFC.450k")
 
 library(ChAMP)
 library("xlsx")
-library(minfi)
-library(minfiData)
-library(shinyMethyl)
-library(wateRmelon)
-library(FlowSorted.Blood.EPIC)
-library(FlowSorted.Blood.450k)
-library(FlowSorted.DLPFC.450k)
-
-# logging =====================================================================
-con <- file("log.txt")
-sink(con, append=TRUE)
-sink(con, append=TRUE, type="message")
-sink()
-# logging =====================================================================
-
-# path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/brain(DLPFC)/GSE74193/raw/data"
-# path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/blood(whole)/GSE87571/raw/data"
-# path <- "E:/YandexDisk/Work/pydnameth/unn_epic/raw/data"
 
 path <- "E:/YandexDisk/Work/pydnameth/datasets/450K/GSE87571/raw/data"
 chip_type = "450K"
@@ -42,7 +14,6 @@ setwd(path)
 
 myImport <- champ.import(directory = path,
                          arraytype = chip_type)
-
 
 beta=myImport$beta
 M=NULL
