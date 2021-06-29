@@ -1,5 +1,5 @@
 import pandas as pd
-
+from tqdm import tqdm
 
 def get_forbidden_cpgs(path, types):
     forbidden_cpgs = set()
@@ -8,3 +8,16 @@ def get_forbidden_cpgs(path, types):
         tmp = df[0].values.tolist()
         forbidden_cpgs |= set(tmp)
     return list(forbidden_cpgs)
+
+
+def betas_pvals_filter(betas: pd.DataFrame, pvals: pd.DataFrame, det_pval=0.01, det_cpg_cutoff=0.1):
+    num_subjects = betas.shape[0]
+    num_cpgs = betas.shape[1]
+    passed_cols = []
+    for col_id, col in tqdm(enumerate(betas.columns)):
+        num_failed = (pvals[col].values > det_pval).sum()
+        if num_failed < det_cpg_cutoff * num_subjects:
+            passed_cols.append(col)
+    print(f"Removing {num_cpgs - len(passed_cols)} failed CpGs with detection p-value above {det_pval}")
+    betas = betas.loc[:, passed_cols]
+    return betas

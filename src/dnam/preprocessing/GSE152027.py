@@ -1,25 +1,33 @@
 import pandas as pd
-from src.dnam.preprocessing.routines.filter import get_forbidden_cpgs
+from src.dnam.preprocessing.routines.filter import get_forbidden_cpgs, betas_pvals_filter
 from src.dnam.preprocessing.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
 from src.dnam.preprocessing.routines.save import save_pheno_betas_to_pkl
 
 
-dataset = "GSE84727"
+dataset = "GSE152027"
 array_type = "450K"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 forbidden_types = ["NoCG", "SNP", "MultiHit", "XY"]
 
 fn = f"{path}/{array_type}/{dataset}/pheno.xlsx"
 df = pd.read_excel(fn)
-pheno = df.set_index('sentrixids')
+df[['subject_id', 'Sample']] = df['title'].str.split(' ',expand=True)
+pheno = df.set_index('subject_id')
 pheno.index.name = "subject_id"
 
-fn = f"{path}/{array_type}/{dataset}/raw/GSE84727_normalisedBetas.csv"
+fn = f"{path}/{array_type}/{dataset}/raw/GSE152027_IOP_processed_signals.csv"
 df = pd.read_csv(fn, delimiter=",")
 df.rename(columns={df.columns[0]: 'CpG'}, inplace=True)
 df.set_index('CpG', inplace=True)
-betas = df.T
+betas = df.iloc[:, 0::2]
+pvals = df.iloc[:, 1::2]
+betas = betas.T
+pvals = pvals.T
+pvals.index = betas.index.values.tolist()
 betas.index.name = "subject_id"
+pvals.index.name = "subject_id"
+
+betas = betas_pvals_filter(betas, pvals, 0.01, 0.1)
 forbidden_cpgs = get_forbidden_cpgs(f"{path}/{array_type}/forbidden_cpgs", forbidden_types)
 betas = betas.loc[:, ~betas.columns.isin(forbidden_cpgs)]
 
