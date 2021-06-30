@@ -11,7 +11,7 @@ def get_pheno_betas_with_common_subjects(pheno: pd.DataFrame, betas: pd.DataFram
         print(f"Warning! In pheno and betas subjects are not the same")
     if not pheno_subj_ids == betas_subj_ids:
         print(f"Warning! In pheno and betas subjects have different order")
-        intersection = list(set(pheno_subj_ids).intersection(betas_subj_ids))
+        intersection = list(set(pheno_subj_ids).intersection(set(betas_subj_ids)))
         pheno = pheno.loc[intersection, :]
         betas = betas.loc[intersection, :]
     else:
