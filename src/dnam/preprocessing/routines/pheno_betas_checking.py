@@ -5,7 +5,7 @@ def get_pheno_betas_with_common_subjects(pheno: pd.DataFrame, betas: pd.DataFram
 
     pheno_subj_ids = list(pheno.index.values)
     betas_subj_ids = list(betas.index.values)
-    if set(pheno_subj_ids) == set(pheno_subj_ids):
+    if set(pheno_subj_ids) == set(betas_subj_ids):
         print(f"In pheno and betas subjects are the same")
     else:
         print(f"Warning! In pheno and betas subjects are not the same")

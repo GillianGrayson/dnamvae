@@ -1,6 +1,5 @@
 rm(list=ls())
 
-.libPaths()
 
 if (!requireNamespace("BiocManager", quietly=TRUE))
   install.packages("BiocManager")
@@ -23,13 +22,6 @@ library(wateRmelon)
 library(FlowSorted.Blood.EPIC)
 library(FlowSorted.Blood.450k)
 library(FlowSorted.DLPFC.450k)
-
-# logging =====================================================================
-con <- file("log.txt")
-sink(con, append=TRUE)
-sink(con, append=TRUE, type="message")
-sink()
-# logging =====================================================================
 
 # path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/brain(DLPFC)/GSE74193/raw/data"
 # path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/blood(whole)/GSE87571/raw/data"
