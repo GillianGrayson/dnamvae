@@ -1,6 +1,7 @@
 import pandas as pd
 from src.dnam.EWAS.routines.manifest import get_manifest
 from src.dnam.EWAS.MannWhitneyUTest.routines.process import perform_mann_whitney_u_test
+from src.dnam.EWAS.MannWhitneyUTest.routines.plot import plot_mann_whitney_u_test
 
 
 dataset = "GSE84727"
@@ -18,4 +19,6 @@ cpgs = betas.columns.values
 
 manifest = get_manifest(platform)
 
-perform_mann_whitney_u_test(df_1, df_2, cpgs, manifest, f"{path}/{platform}/{dataset}")
+#result = perform_mann_whitney_u_test(df_1, df_2, cpgs, manifest, f"{path}/{platform}/{dataset}")
+result = pd.read_excel(f"{path}/{platform}/{dataset}/EWAS/MannWhitneyUTest/table.xlsx", index_col="CpG")
+plot_mann_whitney_u_test(df_1, df_2, result, f"{path}/{platform}/{dataset}", 10, ["Status: Control", "Status: Schizophrenia"])

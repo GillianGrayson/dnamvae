@@ -29,4 +29,7 @@ def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, ma
         os.makedirs(save_path)
 
     result = pd.DataFrame(result)
+    result.sort_values(['pvalue'], ascending=[True], inplace=True)
     result.to_excel(f"{save_path}/table.xlsx", index=False)
+
+    return result
