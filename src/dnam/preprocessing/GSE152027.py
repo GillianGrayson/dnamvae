@@ -26,7 +26,6 @@ pvals = pvals.T
 pvals.index = betas.index.values.tolist()
 betas.index.name = "subject_id"
 pvals.index.name = "subject_id"
-
 betas = betas_pvals_filter(betas, pvals, 0.01, 0.1)
 forbidden_cpgs = get_forbidden_cpgs(f"{path}/{platform}/manifest/forbidden_cpgs", forbidden_types)
 betas = betas.loc[:, ~betas.columns.isin(forbidden_cpgs)]

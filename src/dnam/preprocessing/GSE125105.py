@@ -4,29 +4,20 @@ from src.dnam.preprocessing.routines.pheno_betas_checking import get_pheno_betas
 from src.dnam.preprocessing.routines.save import save_pheno_betas_to_pkl
 
 
-dataset = "GSE147221"
+dataset = "GSE125105"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 forbidden_types = ["NoCG", "SNP", "MultiHit", "XY"]
 
 fn = f"{path}/{platform}/{dataset}/pheno.xlsx"
 df = pd.read_excel(fn)
-df[['subject_id', 'Description']] = df['title'].str.split(': ',expand=True)
-pheno = df.set_index('subject_id')
+pheno = df.set_index('Sample_Name')
 pheno.index.name = "subject_id"
 
-fn = f"{path}/{platform}/{dataset}/raw/GSE147221_Dublin_blood_processed_signals.csv"
-df = pd.read_csv(fn, delimiter=",")
-df.rename(columns={df.columns[0]: 'CpG'}, inplace=True)
-df.set_index('CpG', inplace=True)
-betas = df.iloc[:, 0::2]
-pvals = df.iloc[:, 1::2]
-betas = betas.T
-pvals = pvals.T
-pvals.index = betas.index.values.tolist()
+fn = f"{path}/{platform}/{dataset}/betas.txt"
+df = pd.read_csv(fn, delimiter="\t", index_col='CpG')
+betas = df.T
 betas.index.name = "subject_id"
-pvals.index.name = "subject_id"
-betas = betas_pvals_filter(betas, pvals, 0.01, 0.1)
 forbidden_cpgs = get_forbidden_cpgs(f"{path}/{platform}/manifest/forbidden_cpgs", forbidden_types)
 betas = betas.loc[:, ~betas.columns.isin(forbidden_cpgs)]
 
