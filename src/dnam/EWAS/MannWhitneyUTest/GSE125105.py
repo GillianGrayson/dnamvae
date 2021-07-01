@@ -4,7 +4,7 @@ from src.dnam.EWAS.MannWhitneyUTest.routines.process import perform_mann_whitney
 from src.dnam.EWAS.MannWhitneyUTest.routines.plot import plot_mann_whitney_u_test
 
 
-dataset = "GSE84727"
+dataset = "GSE125105"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
@@ -12,12 +12,12 @@ pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
 betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
 df_global = pd.merge(pheno, betas, left_index=True, right_index=True)
-df_1 = df_global.loc[df_global['disease_status'] == 1, :]
-df_2 = df_global.loc[df_global['disease_status'] == 2, :]
+df_1 = df_global.loc[df_global['diagnosis'] == "control", :]
+df_2 = df_global.loc[df_global['diagnosis'] == "case", :]
 
 cpgs = betas.columns.values
 
 manifest = get_manifest(platform)
 
 result = perform_mann_whitney_u_test(df_1, df_2, cpgs, manifest, f"{path}/{platform}/{dataset}")
-plot_mann_whitney_u_test(df_1, df_2, result, f"{path}/{platform}/{dataset}", 10, ["Status: Control", "Status: Schizophrenia"])
+plot_mann_whitney_u_test(df_1, df_2, result, f"{path}/{platform}/{dataset}", 10, ["Status: Control", "Status: Depression"])

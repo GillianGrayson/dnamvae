@@ -9,7 +9,7 @@ import os
 def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, manifest: pd.DataFrame, path: str):
 
     result = {'CpG': cpgs}
-    result['Gene'] = np.full(len(cpgs), '', dtype=object)
+    result['Gene'] = np.asarray(['non-genic'] * len(cpgs))
     metrics = ['statistic', 'pvalue']
     for m in metrics:
         result[m] = np.zeros(len(cpgs))
@@ -29,7 +29,8 @@ def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, ma
         os.makedirs(save_path)
 
     result = pd.DataFrame(result)
+    result.set_index("CpG", inplace=True)
     result.sort_values(['pvalue'], ascending=[True], inplace=True)
-    result.to_excel(f"{save_path}/table.xlsx", index=False)
+    result.to_excel(f"{save_path}/table.xlsx", index=True)
 
     return result

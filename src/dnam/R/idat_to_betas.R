@@ -15,6 +15,8 @@ BiocManager::install("FlowSorted.Blood.450k")
 BiocManager::install("FlowSorted.DLPFC.450k")
 
 library(ChAMP)
+library("xlsx")
+library(openxlsx)
 library(minfi)
 library(minfiData)
 library(shinyMethyl)
@@ -23,12 +25,8 @@ library(FlowSorted.Blood.EPIC)
 library(FlowSorted.Blood.450k)
 library(FlowSorted.DLPFC.450k)
 
-# path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/brain(DLPFC)/GSE74193/raw/data"
-# path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL13534/filtered/blood(whole)/GSE87571/raw/data"
-# path <- "E:/YandexDisk/Work/pydnameth/unn_epic/raw/data"
-
-path <- "E:/YandexDisk/Work/pydnameth/script_datasets/GPL21145/filtered/GSE147740/raw_data"
-chip_type = "EPIC"
+path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL13534/GSE125105/raw/idat"
+chip_type = "450K"
 detPcut = 0.01
 
 setwd(path)
@@ -179,7 +177,7 @@ densityPlot(beta_funnorm_filtered, sampGroups = observables$Sample_Group)
 dev.off()
 
 beta_funnorm_filtered_df <- data.frame(row.names(beta_funnorm_filtered),beta_funnorm_filtered)
-colnames(beta_funnorm_filtered_df)[1] <- "IlmnID"
+colnames(beta_funnorm_filtered_df)[1] <- "CpG"
 write.table(beta_funnorm_filtered_df,file="beta_funnorm_filtered.txt",row.names=F,sep="\t",quote=F)
 
 # quantile ====================================================================

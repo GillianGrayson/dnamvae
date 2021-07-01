@@ -49,10 +49,15 @@ def plot_mann_whitney_u_test(
             )
         ]
 
+        if isinstance(row['Gene'], str):
+            gene = row['Gene']
+        else:
+            gene = 'non-genic'
+
         layout = go.Layout(
             template="none",
             title=dict(
-                text=f"{cpg} ({row['Gene']}): {row['pvalue']:0.4e}",
+                text=f"{cpg} ({gene}): {row['pvalue']:0.4e}",
                 font=dict(
                     size=25
                 )

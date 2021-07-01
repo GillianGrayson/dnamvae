@@ -2,13 +2,13 @@ import pandas as pd
 import os
 
 
-def process_str_elem(x, delimiter: str = ';'):
+def process_str_elem(x, delimiter: str = ';', missed: str = 'non-genic'):
     if isinstance(x, str):
         elems = x.split(';')
         elems = list(set(elems))
         elems = delimiter.join(elems)
     else:
-        elems = ''
+        elems = missed
     return elems
 
 

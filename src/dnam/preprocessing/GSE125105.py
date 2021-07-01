@@ -14,7 +14,7 @@ df = pd.read_excel(fn)
 pheno = df.set_index('Sample_Name')
 pheno.index.name = "subject_id"
 
-fn = f"{path}/{platform}/{dataset}/betas.txt"
+fn = f"{path}/{platform}/{dataset}/raw/result/part(all)_config(0.01_0.10_0.10)/beta_funnorm_filtered.txt"
 df = pd.read_csv(fn, delimiter="\t", index_col='CpG')
 betas = df.T
 betas.index.name = "subject_id"
