@@ -1,7 +1,7 @@
 import pandas as pd
 from src.dnam.routines.manifest import get_manifest
-from src.dnam.EWAS.MannWhitneyUTest.routines.process import perform_mann_whitney_u_test
-from src.dnam.EWAS.MannWhitneyUTest.routines.plot import plot_mann_whitney_u_test
+from src.dnam.EWAS.mann_whitney_u_test.routines.process import perform_mann_whitney_u_test
+from src.dnam.EWAS.mann_whitney_u_test.routines.plot import plot_mann_whitney_u_test
 
 
 dataset = "GSE152027"

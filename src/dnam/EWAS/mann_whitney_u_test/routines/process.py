@@ -14,7 +14,7 @@ def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, ma
     for m in metrics:
         result[m] = np.zeros(len(cpgs))
 
-    for cpg_id, cpg in tqdm(enumerate(cpgs), desc='Mann-Whitney U test'):
+    for cpg_id, cpg in tqdm(enumerate(cpgs), desc='Mann-Whitney U test', total=len(cpgs)):
         result['Gene'][cpg_id] = manifest.loc[cpg, 'Gene']
         data_1 = df_1[cpg].values
         data_2 = df_2[cpg].values

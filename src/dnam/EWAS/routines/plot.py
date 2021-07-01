@@ -9,6 +9,7 @@ def get_axis(title, title_size, tick_size):
         linecolor='black',
         showline=True,
         gridcolor='gray',
+        gridwidth=0.1,
         mirror=True,
         ticks='outside',
         titlefont=dict(
