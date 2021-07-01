@@ -21,3 +21,11 @@ def betas_pvals_filter(betas: pd.DataFrame, pvals: pd.DataFrame, det_pval=0.01, 
     print(f"Removing {num_cpgs - len(passed_cols)} failed CpGs with detection p-value above {det_pval}")
     betas = betas.loc[:, passed_cols]
     return betas
+
+
+def manifest_filter(betas: pd.DataFrame, manifest: pd.DataFrame):
+    betas_cpgs = betas.columns.values
+    manifest_cpgs = manifest.index.values
+    common_cpgs = list(set(betas_cpgs).intersection(set(manifest_cpgs)))
+    betas = betas.loc[:, common_cpgs]
+    return betas

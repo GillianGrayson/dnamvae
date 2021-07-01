@@ -1,5 +1,5 @@
 import pandas as pd
-from src.dnam.EWAS.routines.manifest import get_manifest
+from src.dnam.routines.manifest import get_manifest
 from src.dnam.EWAS.MannWhitneyUTest.routines.process import perform_mann_whitney_u_test
 from src.dnam.EWAS.MannWhitneyUTest.routines.plot import plot_mann_whitney_u_test
 

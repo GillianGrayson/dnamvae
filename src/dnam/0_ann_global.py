@@ -3,7 +3,6 @@ from functools import reduce
 import os
 import pickle
 
-
 path = f'E:/YandexDisk/Work/dnamvae/data/annotation'
 
 fn_pkl = f"{path}/ann.pkl"
