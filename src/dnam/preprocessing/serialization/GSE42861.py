@@ -1,11 +1,11 @@
 import pandas as pd
-from src.dnam.preprocessing.routines.filter import get_forbidden_cpgs, manifest_filter
-from src.dnam.preprocessing.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
-from src.dnam.preprocessing.routines.save import save_pheno_betas_to_pkl
+from src.dnam.preprocessing.serialization.routines import get_forbidden_cpgs, manifest_filter
+from src.dnam.preprocessing.serialization.routines import get_pheno_betas_with_common_subjects
+from src.dnam.preprocessing.serialization.routines import save_pheno_betas_to_pkl
 from src.dnam.routines.manifest import get_manifest
 
 
-dataset = "GSE125105"
+dataset = "GSE42861"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 forbidden_types = ["NoCG", "SNP", "MultiHit", "XY"]

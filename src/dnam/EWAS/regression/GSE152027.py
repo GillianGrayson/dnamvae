@@ -5,21 +5,22 @@ from src.dnam.EWAS.regression.routines.plot import plot_regression_scatter
 import os
 
 
-dataset = "GSE84727"
+dataset = "GSE152027"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 is_recalc = False
 
-formula = "age * C(disease_status)"
-terms = ["age:C(disease_status)[T.2]"]
+formula = "ageatbloodcollection * C(status)"
+terms = ["ageatbloodcollection:C(status)[T.FEP]"]
 aim = "age_status"
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
 betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
 df = pd.merge(pheno, betas, left_index=True, right_index=True)
-df = df[df['age'].notnull()]
+df = df[df['ageatbloodcollection'].notnull()]
+df = df.loc[df['status'].isin(["CON", "FEP"]), :]
 
 cpgs = betas.columns.values
 
@@ -30,4 +31,4 @@ if is_recalc or not os.path.isfile(f"{path}/{platform}/{dataset}/EWAS/regression
 else:
     result = pd.read_excel(f"{path}/{platform}/{dataset}/EWAS/regression/{aim}/table.xlsx", index_col="CpG")
 
-plot_regression_scatter(df, ("age", "Age"), "disease_status", {"Status: Control": 1, "Status: Schizophrenia": 2}, result, 10, f"{path}/{platform}/{dataset}/EWAS/regression/{aim}")
+plot_regression_scatter(df, ("ageatbloodcollection", "Age"), "status", {"Status: Control": "CON", "Status: First Epizode": "FEP"}, result, 10, f"{path}/{platform}/{dataset}/EWAS/regression/{aim}")

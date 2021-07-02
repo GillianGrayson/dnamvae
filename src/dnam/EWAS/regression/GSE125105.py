@@ -5,14 +5,14 @@ from src.dnam.EWAS.regression.routines.plot import plot_regression_scatter
 import os
 
 
-dataset = "GSE84727"
+dataset = "GSE125105"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 is_recalc = False
 
-formula = "age * C(disease_status)"
-terms = ["age:C(disease_status)[T.2]"]
+formula = "age * C(diagnosis)"
+terms = ["age:C(diagnosis)[T.control]"]
 aim = "age_status"
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
@@ -30,4 +30,4 @@ if is_recalc or not os.path.isfile(f"{path}/{platform}/{dataset}/EWAS/regression
 else:
     result = pd.read_excel(f"{path}/{platform}/{dataset}/EWAS/regression/{aim}/table.xlsx", index_col="CpG")
 
-plot_regression_scatter(df, ("age", "Age"), "disease_status", {"Status: Control": 1, "Status: Schizophrenia": 2}, result, 10, f"{path}/{platform}/{dataset}/EWAS/regression/{aim}")
+plot_regression_scatter(df, ("age", "Age"), "diagnosis", {"Status: Control": "control", "Status: Depression": "case"}, result, 10, f"{path}/{platform}/{dataset}/EWAS/regression/{aim}")
