@@ -1,20 +1,27 @@
 import numpy as np
 import pandas as pd
 import os
+from src.dnam.datasets.pheno import *
 
 
-dataset = "GSE80417"
+dataset = "GSE42861"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
+
+status_pair = get_status_pair(dataset)
+age_pair = get_age_pair(dataset)
+sex_pair = get_sex_pair(dataset)
+status_vals_pairs = get_status_vals_pairs(dataset)
+sex_vals_pairs = get_sex_vals_pairs(dataset)
 
 save_path = f"{path}/{platform}/{dataset}/calculator"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
-pheno = pheno[["age", "Sex"]]
-pheno.replace({"Sex": {"F": 1, "M": 0}}, inplace=True)
-pheno.rename(columns={'age': 'Age', 'Sex': 'Female'}, inplace=True)
+pheno = pheno[[age_pair[0], sex_pair[0]]]
+pheno[sex_pair[0]] = pheno[sex_pair[0]].map({sex_vals_pairs[0][0]: 1, sex_vals_pairs[1][0]: 0})
+pheno.rename(columns={age_pair[0]: 'Age', sex_pair[0]: 'Female'}, inplace=True)
 pheno["Tissue"] = "Blood WB"
 pheno.to_csv(f"{save_path}/pheno.csv", na_rep="NaN")
 

@@ -1,6 +1,8 @@
 import pandas as pd
 import plotly.graph_objects as go
-from src.dnam.EWAS.routines.plot import get_axis, save_figure
+from src.dnam.routines.plot.routines import save_figure
+from src.dnam.routines.plot.scatter import add_scatter_trace
+from src.dnam.routines.plot.layout import add_layout
 import os
 
 
@@ -22,55 +24,14 @@ def plot_regression_scatter(
 
         fig = go.Figure()
         for key in d:
-            fig.add_trace(
-                go.Scatter(
-                    x=d[key][continuous_column[0]].values,
-                    y=d[key][cpg].values,
-                    name=key,
-                    mode='markers',
-                    marker=dict(
-                        size=8,
-                        opacity=0.7,
-                        line=dict(
-                            width=1
-                        )
-                    )
-                )
-            )
-
+            add_scatter_trace(fig, d[key][continuous_column[0]].values, d[key][cpg].values, key)
 
         if isinstance(row['Gene'], str):
             gene = row['Gene']
         else:
             gene = 'non-genic'
 
-        fig.update_layout(
-            template="none",
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="center",
-                x=0.5
-            ),
-            title=dict(
-                text=f"{cpg} ({gene})",
-                font=dict(
-                    size=25
-                )
-            ),
-            autosize=True,
-            margin=go.layout.Margin(
-                l=120,
-                r=20,
-                b=80,
-                t=100,
-                pad=0
-            ),
-            showlegend=True,
-            xaxis=get_axis(continuous_column[1], 20, 20),
-            yaxis=get_axis('Methylation Level', 20, 20),
-        )
+        add_layout(fig, continuous_column[1], 'Methylation Level', f"{cpg} ({gene})")
 
         save_path = f"{path}/figs"
         if not os.path.exists(save_path):

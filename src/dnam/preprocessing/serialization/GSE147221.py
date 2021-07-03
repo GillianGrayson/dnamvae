@@ -1,7 +1,7 @@
 import pandas as pd
-from src.dnam.preprocessing.serialization.routines import get_forbidden_cpgs, betas_pvals_filter, manifest_filter
-from src.dnam.preprocessing.serialization.routines import get_pheno_betas_with_common_subjects
-from src.dnam.preprocessing.serialization.routines import save_pheno_betas_to_pkl
+from src.dnam.preprocessing.serialization.routines.filter import get_forbidden_cpgs, manifest_filter, betas_pvals_filter
+from src.dnam.preprocessing.serialization.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
+from src.dnam.preprocessing.serialization.routines.save import save_pheno_betas_to_pkl
 from src.dnam.routines.manifest import get_manifest
 
 
