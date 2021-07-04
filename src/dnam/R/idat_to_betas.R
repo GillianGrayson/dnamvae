@@ -25,8 +25,8 @@ library(FlowSorted.Blood.EPIC)
 library(FlowSorted.Blood.450k)
 library(FlowSorted.DLPFC.450k)
 
-path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL13534/GSE125105/raw/idat"
-chip_type = "450K"
+path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL21145/GSE168739/raw/idat"
+chip_type = "EPIC"
 detPcut = 0.01
 
 setwd(path)
@@ -46,6 +46,7 @@ myLoad = champ.load(directory = path,
            filterSNPs = TRUE, # If filterSNPs=TRUE, probes in which the probed CpG falls near a SNP as defined in Nordlund et al are removed.(default = TRUE)
            filterMultiHit = TRUE, # If filterMultiHit=TRUE, probes in which the probe aligns to multiple locations with bwa as defined in Nordlund et al are removed.(default = TRUE)
            filterXY = TRUE, # If filterXY=TRUE, probes from X and Y chromosomes are removed.(default = TRUE)
+           force=TRUE
 )
 
 passed_cpgs_origin = rownames(myLoad$beta)

@@ -28,7 +28,7 @@ def plot_mann_whitney_u_test(
 
         add_layout(fig, '', "Methylation Level", f"{cpg} ({gene}): {row['pvalue']:0.4e}")
 
-        save_path = f"{path}/EWAS/MannWhitneyUTest/figs"
+        save_path = f"{path}/EWAS/mann_whitney_u_test/figs"
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 

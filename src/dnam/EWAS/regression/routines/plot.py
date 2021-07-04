@@ -10,14 +10,14 @@ def plot_regression_scatter(
         df: pd.DataFrame,
         continuous_column: tuple,
         categorical_column: str,
-        categorical_values: dict,
+        categorical_values: list,
         result: pd.DataFrame,
         num_cpgs: int,
         path: str,
 ):
     d = {}
-    for key, value in categorical_values.items():
-        d[key] = df.loc[df[categorical_column] == value, :]
+    for (real, show) in categorical_values:
+        d[show] = df.loc[df[categorical_column] == real, :]
 
     head = result.head(num_cpgs)
     for cpg_id, (cpg, row) in enumerate(head.iterrows()):

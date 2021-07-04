@@ -24,7 +24,7 @@ def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, ma
 
     result = correct_pvalues(result, ['pvalue'])
 
-    save_path = f"{path}/EWAS/MannWhitneyUTest"
+    save_path = f"{path}/EWAS/mann_whitney_u_test"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 

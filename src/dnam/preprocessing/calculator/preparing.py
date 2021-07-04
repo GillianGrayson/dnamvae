@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 import os
-from src.dnam.datasets.pheno import *
+from src.dnam.routines.datasets_features import *
 
 
-dataset = "GSE42861"
-platform = "GPL13534"
+dataset = "GSE168739"
+platform = "GPL21145"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 status_pair = get_status_pair(dataset)

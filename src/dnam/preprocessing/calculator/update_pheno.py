@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-dataset = "GSE42861"
-platform = "GPL13534"
+dataset = "GSE168739"
+platform = "GPL21145"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
