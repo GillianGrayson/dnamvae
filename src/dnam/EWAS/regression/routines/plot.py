@@ -19,6 +19,10 @@ def plot_regression_scatter(
     for (real, show) in categorical_values:
         d[show] = df.loc[df[categorical_column] == real, :]
 
+    save_path = f"{path}/figs"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
     head = result.head(num_cpgs)
     for cpg_id, (cpg, row) in enumerate(head.iterrows()):
 
@@ -26,15 +30,5 @@ def plot_regression_scatter(
         for key in d:
             add_scatter_trace(fig, d[key][continuous_column[0]].values, d[key][cpg].values, key)
 
-        if isinstance(row['Gene'], str):
-            gene = row['Gene']
-        else:
-            gene = 'non-genic'
-
-        add_layout(fig, continuous_column[1], 'Methylation Level', f"{cpg} ({gene})")
-
-        save_path = f"{path}/figs"
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-
+        add_layout(fig, continuous_column[1], 'Methylation Level', f"{cpg} ({row['Gene']})")
         save_figure(fig, f"{save_path}/{cpg_id}_{cpg}")

@@ -5,7 +5,7 @@ def get_axis(title, title_size, tick_size):
         title=title,
         autorange=True,
         showgrid=True,
-        zeroline=True,
+        zeroline=False,
         linecolor='black',
         showline=True,
         gridcolor='gray',
