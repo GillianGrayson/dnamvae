@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
-from src.dnam.routines.plot.routines import get_axis, save_figure
-from src.dnam.routines.plot.layout import add_layout
+from src.dnam.routines.plot.save import save_figure
+from src.dnam.routines.plot.layout import add_layout, get_axis
 from src.dnam.routines.plot.box import add_box_trace
 import os
 

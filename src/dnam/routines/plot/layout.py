@@ -1,5 +1,4 @@
 from plotly import graph_objects as go
-from src.dnam.routines.plot.routines import get_axis
 
 
 def add_layout(fig, x_label, y_label, title):
@@ -30,3 +29,31 @@ def add_layout(fig, x_label, y_label, title):
         xaxis=get_axis(x_label, 20, 20),
         yaxis=get_axis(y_label, 20, 20),
     )
+
+
+def get_axis(title, title_size, tick_size):
+    axis = dict(
+        title=title,
+        autorange=True,
+        showgrid=True,
+        zeroline=False,
+        linecolor='black',
+        showline=True,
+        gridcolor='gray',
+        gridwidth=0.1,
+        mirror=True,
+        ticks='outside',
+        titlefont=dict(
+            color='black',
+            size=title_size
+        ),
+        showticklabels=True,
+        tickangle=0,
+        tickfont=dict(
+            color='black',
+            size=tick_size
+        ),
+        exponentformat='e',
+        showexponent='all'
+    )
+    return axis

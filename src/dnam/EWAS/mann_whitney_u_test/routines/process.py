@@ -9,7 +9,7 @@ import os
 def perform_mann_whitney_u_test(df_1: pd.DataFrame, df_2: pd.DataFrame, cpgs, manifest: pd.DataFrame, path: str):
 
     result = {'CpG': cpgs}
-    result['Gene'] = np.asarray(['non-genic'] * len(cpgs))
+    result['Gene'] = np.zeros(len(cpgs), dtype=object)
     metrics = ['statistic', 'pvalue']
     for m in metrics:
         result[m] = np.zeros(len(cpgs))
