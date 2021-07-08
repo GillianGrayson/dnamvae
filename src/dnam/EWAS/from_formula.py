@@ -12,7 +12,7 @@ import os
 import numpy as np
 
 
-dataset = "GSE42861"
+dataset = "GSE147221"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
@@ -25,10 +25,13 @@ sex_pair = tuple([x.replace(' ','_') for x in get_sex_pair(dataset)])
 status_vals_pairs = get_status_vals_pairs(dataset)
 sex_vals_pairs = get_sex_vals_pairs(dataset)
 
-formula = f"{age_pair[0]} * C({status_pair[0]})"
+cont_feat = "DNAmGrimAgeAcc"
+cont_show = "DNAmGrimAgeAcc"
+
+formula = f"{cont_feat} * C({status_pair[0]})"
 status_vals = sorted([x for (x,y) in status_vals_pairs])
-terms = [f"{age_pair[0]}:C({status_pair[0]})[T.{status_vals[-1]}]"]
-aim = "age_status"
+terms = [f"{cont_feat}:C({status_pair[0]})[T.{status_vals[-1]}]", f"{cont_feat}", f"C({status_pair[0]})[T.{status_vals[-1]}]"]
+aim = f"{cont_feat}_status"
 
 path_save = f"{path}/{platform}/{dataset}/EWAS/from_formula/{aim}"
 if not os.path.exists(f"{path_save}/figs"):
@@ -39,7 +42,7 @@ pheno.columns = pheno.columns.str.replace(' ', '_')
 betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
 df = pd.merge(pheno, betas, left_index=True, right_index=True)
-df = df[df[age_pair[0]].notnull()]
+df = df[df[cont_feat].notnull()]
 df = df.loc[df[status_pair[0]].isin(status_vals), :]
 
 cpgs = betas.columns.values
@@ -55,7 +58,7 @@ if is_rerun:
     for t in terms:
         result[f"{t}_pvalue"] = np.zeros(len(cpgs))
 
-    for cpg_id, cpg in tqdm(enumerate(cpgs), desc='Regression', total=len(cpgs)):
+    for cpg_id, cpg in tqdm(enumerate(cpgs), desc='from_formula', total=len(cpgs)):
         result['Gene'][cpg_id] = manifest.loc[cpg, 'Gene']
         reg = smf.ols(formula=f"{cpg} ~ {formula}", data=df).fit()
         pvalues = dict(reg.pvalues)
@@ -76,7 +79,7 @@ result = result.head(num_cpgs_to_plot)
 for cpg_id, (cpg, row) in enumerate(result.iterrows()):
     fig = go.Figure()
     for (real, show) in status_vals_pairs:
-        add_scatter_trace(fig,  df.loc[df[status_pair[0]] == real, age_pair[0]].values, df.loc[df[status_pair[0]] == real, cpg].values, show)
-    add_layout(fig, status_pair[1], 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
+        add_scatter_trace(fig,  df.loc[df[status_pair[0]] == real, cont_feat].values, df.loc[df[status_pair[0]] == real, cpg].values, show)
+    add_layout(fig, cont_show, 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
     fig.update_layout({'colorway': ['blue', "red"]})
     save_figure(fig, f"{path_save}/figs/{cpg_id}_{cpg}")
