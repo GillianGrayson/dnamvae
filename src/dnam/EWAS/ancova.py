@@ -10,13 +10,14 @@ from src.dnam.routines.plot.scatter import add_scatter_trace
 from src.dnam.routines.plot.layout import add_layout
 import os
 import numpy as np
+from pingouin import ancova
 
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 datasets = ["GSE42861", "GSE80417", "GSE84727", "GSE125105", "GSE147221"]
 
-is_rerun = False
+is_rerun = True
 num_cpgs_to_plot = 10
 
 for dataset in datasets:
@@ -30,13 +31,14 @@ for dataset in datasets:
 
     cont_feat = age_pair[0]
     cont_show = age_pair[1]
+    cat_feat = status_pair[0]
+    cat_show = status_pair[1]
 
-    formula = f"{cont_feat} * C({status_pair[0]})"
     status_vals = sorted([x for (x,y) in status_vals_pairs])
-    terms = [f"{cont_feat}:C({status_pair[0]})[T.{status_vals[-1]}]", f"{cont_feat}", f"C({status_pair[0]})[T.{status_vals[-1]}]"]
-    aim = f"{cont_feat}_status"
+    terms = [cat_feat, cont_feat]
+    aim = f"{cont_show}_{cat_show}"
 
-    path_save = f"{path}/{platform}/{dataset}/EWAS/from_formula/{aim}"
+    path_save = f"{path}/{platform}/{dataset}/EWAS/ancova/{aim}"
     if not os.path.exists(f"{path_save}/figs"):
         os.makedirs(f"{path_save}/figs")
 
@@ -55,25 +57,19 @@ for dataset in datasets:
     if is_rerun:
         result = {'CpG': cpgs}
         result['Gene'] = np.zeros(len(cpgs), dtype=object)
-        metrics = ['R2', 'R2_adj']
-        for m in metrics:
-            result[m] = np.zeros(len(cpgs))
         for t in terms:
-            result[f"{t}_pvalue"] = np.zeros(len(cpgs))
+            result[f"{t}_pval"] = np.zeros(len(cpgs))
 
         for cpg_id, cpg in tqdm(enumerate(cpgs), desc='from_formula', total=len(cpgs)):
             result['Gene'][cpg_id] = manifest.loc[cpg, 'Gene']
-            reg = smf.ols(formula=f"{cpg} ~ {formula}", data=df).fit()
-            pvalues = dict(reg.pvalues)
-            result['R2'][cpg_id] = reg.rsquared
-            result['R2_adj'][cpg_id] = reg.rsquared_adj
+            res = ancova(data=df, dv=cpg, covar=cont_feat, between=cat_feat)
             for t in terms:
-                result[f"{t}_pvalue"][cpg_id] = pvalues[t]
+                result[f"{t}_pval"][cpg_id] = res.loc[res['Source'] == t, 'p-unc'].values[0]
 
-        result = correct_pvalues(result, [f"{t}_pvalue" for t in terms])
+        result = correct_pvalues(result, [f"{t}_pval" for t in terms])
         result = pd.DataFrame(result)
         result.set_index("CpG", inplace=True)
-        result.sort_values([f"{t}_pvalue" for t in terms], ascending=[True] * len(terms), inplace=True)
+        result.sort_values([f"{t}_pval" for t in terms], ascending=[True] * len(terms), inplace=True)
         result.to_excel(f"{path_save}/table.xlsx", index=True)
     else:
         result = pd.read_excel(f"{path_save}/table.xlsx", index_col="CpG")
@@ -82,10 +78,7 @@ for dataset in datasets:
     for cpg_id, (cpg, row) in enumerate(result.iterrows()):
         fig = go.Figure()
         for (real, show) in status_vals_pairs:
-            df_curr = df.loc[df[status_pair[0]] == real, :]
-            reg = smf.ols(formula=f"{cpg} ~ {cont_feat}", data=df_curr).fit()
-            add_scatter_trace(fig, df_curr[cont_feat].values, df_curr[cpg].values, show)
-            add_scatter_trace(fig, df_curr[cont_feat].values, reg.fittedvalues.values, "", "lines")
+            add_scatter_trace(fig,  df.loc[df[status_pair[0]] == real, cont_feat].values, df.loc[df[status_pair[0]] == real, cpg].values, show)
         add_layout(fig, cont_show, 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
-        fig.update_layout({'colorway': ['blue', 'blue', "red", "red"]})
+        fig.update_layout({'colorway': ['blue', "red"]})
         save_figure(fig, f"{path_save}/figs/{cpg_id}_{cpg}")

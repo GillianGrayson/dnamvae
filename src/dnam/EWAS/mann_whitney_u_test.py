@@ -65,7 +65,6 @@ else:
 
 result = result.head(num_cpgs_to_plot)
 for cpg_id, (cpg, row) in enumerate(result.iterrows()):
-
     fig = go.Figure()
     add_box_trace(fig, df_1[cpg].values, status_vals_pairs[0][1])
     add_box_trace(fig, df_2[cpg].values, status_vals_pairs[1][1])
