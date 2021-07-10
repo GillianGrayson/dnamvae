@@ -14,6 +14,12 @@ def get_status_pair(dataset: str):
         status = ('status', 'Status')
     elif dataset == "GSE168739":
         status = ('', '')
+    elif dataset == "GSE111629":
+        status = ('disease state', 'Status')
+    elif dataset == "GSE128235":
+        status = ('diagnosis', 'Status')
+    elif dataset == "GSE72774":
+        status = ('diseasestatus', 'Status')
     return status
 
 
@@ -32,6 +38,12 @@ def get_age_pair(dataset: str):
     elif dataset == "GSE152027":
         age = ("ageatbloodcollection", "Age")
     elif dataset == "GSE168739":
+        age = ("age", "Age")
+    elif dataset == "GSE111629":
+        age = ("age", "Age")
+    elif dataset == "GSE128235":
+        age = ("age", "Age")
+    elif dataset == "GSE72774":
         age = ("age", "Age")
     return age
 
@@ -52,6 +64,12 @@ def get_sex_pair(dataset: str):
         sex = ("gender", "Sex")
     elif dataset == "GSE168739":
         sex = ("gender", "Sex")
+    elif dataset == "GSE111629":
+        sex = ("gender", "Sex")
+    elif dataset == "GSE128235":
+        sex = ("Sex", "Sex")
+    elif dataset == "GSE72774":
+        sex = ("Sex", "Sex")
     return sex
 
 def get_status_vals_pairs(dataset: str):
@@ -70,6 +88,12 @@ def get_status_vals_pairs(dataset: str):
         status_group = [("CON", "Status: Normal"), ("SCZ", "Status: Schizophrenia")]
     elif dataset == "GSE168739":
         status_group = [("", ""), ("", "")]
+    elif dataset == "GSE111629":
+        status_group = [("PD-free control", "Status: Normal"), ("Parkinson's disease (PD)", "Status: Parkinson")]
+    elif dataset == "GSE128235":
+        status_group = [("control", "Status: Normal"), ("case", "Status: Depression")]
+    elif dataset == "GSE72774":
+        status_group = [("control", "Status: Normal"), ("PD", "Status: Parkinson")]
     return status_group
 
 
@@ -89,4 +113,10 @@ def get_sex_vals_pairs(dataset: str):
         status_group = [("F", "F"), ("M", "M")]
     elif dataset == "GSE168739":
         status_group = [("F", "F"), ("M", "M")]
+    elif dataset == "GSE111629":
+        status_group = [("Female", "F"), ("Male", "M")]
+    elif dataset == "GSE128235":
+        status_group = [("F", "F"), ("M", "M")]
+    elif dataset == "GSE72774":
+        status_group = [("female", "F"), ("male", "M")]
     return status_group

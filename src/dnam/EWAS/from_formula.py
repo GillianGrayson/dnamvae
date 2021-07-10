@@ -14,9 +14,9 @@ import numpy as np
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE42861", "GSE80417", "GSE84727", "GSE125105", "GSE147221"]
+datasets = ["GSE80417", "GSE42861", "GSE84727", "GSE125105", "GSE147221"]
 
-is_rerun = False
+is_rerun = True
 num_cpgs_to_plot = 10
 
 for dataset in datasets:
@@ -28,8 +28,8 @@ for dataset in datasets:
     status_vals_pairs = get_status_vals_pairs(dataset)
     sex_vals_pairs = get_sex_vals_pairs(dataset)
 
-    cont_feat = age_pair[0]
-    cont_show = age_pair[1]
+    cont_feat = "DNAmPhenoAgeAcc"
+    cont_show = "DNAmPhenoAgeAcc"
 
     formula = f"{cont_feat} * C({status_pair[0]})"
     status_vals = sorted([x for (x,y) in status_vals_pairs])

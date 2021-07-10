@@ -8,8 +8,8 @@ BiocManager::install("ChAMP")
 library(ChAMP)
 library("xlsx")
 
-path <- "E:/YandexDisk/Work/pydnameth/datasets/450K/GSE87571/raw/data"
-chip_type = "450K"
+path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL21145/GSE168739/raw/idat"
+chip_type = "EPIC"
 setwd(path)
 
 myImport <- champ.import(directory = path,

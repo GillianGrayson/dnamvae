@@ -5,7 +5,7 @@ from src.dnam.preprocessing.serialization.routines.save import save_pheno_betas_
 from src.dnam.routines.manifest import get_manifest
 
 
-dataset = "GSE80417"
+dataset = "GSE111629"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 forbidden_types = ["NoCG", "SNP", "MultiHit", "XY"]
@@ -14,13 +14,11 @@ manifest = get_manifest(platform)
 
 fn = f"{path}/{platform}/{dataset}/pheno.xlsx"
 df = pd.read_excel(fn)
-pheno = df.set_index('description')
+pheno = df.set_index('Sample_Name')
 pheno.index.name = "subject_id"
 
-fn = f"{path}/{platform}/{dataset}/raw/GSE80417_normalizedBetas.csv"
-df = pd.read_csv(fn, delimiter=",")
-df.rename(columns={df.columns[0]: 'CpG'}, inplace=True)
-df.set_index('CpG', inplace=True)
+fn = f"{path}/{platform}/{dataset}/raw/result/part(all)_config(0.01_0.10_0.10)/beta_funnorm_filtered.txt"
+df = pd.read_csv(fn, delimiter="\t", index_col='CpG')
 betas = df.T
 betas.index.name = "subject_id"
 betas = manifest_filter(betas, manifest)

@@ -4,8 +4,8 @@ import os
 from src.dnam.routines.datasets_features import *
 
 
-dataset = "GSE168739"
-platform = "GPL21145"
+dataset = "GSE72774"
+platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 status_pair = get_status_pair(dataset)

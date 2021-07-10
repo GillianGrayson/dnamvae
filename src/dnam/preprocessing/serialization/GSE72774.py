@@ -1,11 +1,11 @@
 import pandas as pd
-from src.dnam.preprocessing.serialization.routines.filter import get_forbidden_cpgs, manifest_filter
+from src.dnam.preprocessing.serialization.routines.filter import get_forbidden_cpgs, manifest_filter, betas_pvals_filter
 from src.dnam.preprocessing.serialization.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
 from src.dnam.preprocessing.serialization.routines.save import save_pheno_betas_to_pkl
 from src.dnam.routines.manifest import get_manifest
 
 
-dataset = "GSE80417"
+dataset = "GSE72774"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 forbidden_types = ["NoCG", "SNP", "MultiHit", "XY"]
@@ -14,10 +14,11 @@ manifest = get_manifest(platform)
 
 fn = f"{path}/{platform}/{dataset}/pheno.xlsx"
 df = pd.read_excel(fn)
-pheno = df.set_index('description')
+df['subject_id'] = df['title']
+pheno = df.set_index('subject_id')
 pheno.index.name = "subject_id"
 
-fn = f"{path}/{platform}/{dataset}/raw/GSE80417_normalizedBetas.csv"
+fn = f"{path}/{platform}/{dataset}/raw/GSE72774_datBetaNormalized.csv"
 df = pd.read_csv(fn, delimiter=",")
 df.rename(columns={df.columns[0]: 'CpG'}, inplace=True)
 df.set_index('CpG', inplace=True)

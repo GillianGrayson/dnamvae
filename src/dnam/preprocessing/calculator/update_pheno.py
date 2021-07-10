@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-dataset = "GSE80417"
+dataset = "GSE72774"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
