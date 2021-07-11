@@ -16,6 +16,7 @@ manifest = get_manifest(platform)
 fn = f"{path}/{platform}/{dataset}/pheno.xlsx"
 df = pd.read_excel(fn)
 pheno = df.set_index('geo_accession')
+pheno.index.name = "subject_id"
 
 betas, pvals = download_betas_and_pvals_from_gsms(pheno.index.values, f"{path}/{platform}/{dataset}/raw")
 betas = betas_pvals_filter(betas, pvals, 0.01, 0.1)
