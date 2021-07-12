@@ -20,8 +20,8 @@ def download_betas_and_pvals_from_gsms(gsms, path):
         if gsm_id == 0:
             betas = pd.DataFrame(0, index=gsm_data.table.index, columns=gsms)
             pvals = pd.DataFrame(0, index=gsm_data.table.index, columns=gsms)
-        betas[gsm] = gsm_data.table['VALUE']
-        pvals[gsm] = gsm_data.table['DetectionPval']
+        betas[gsm] = gsm_data.table.iloc[:, 0]
+        pvals[gsm] = gsm_data.table.iloc[:, 1]
 
     betas = betas.T
     betas.index.name = "subject_id"

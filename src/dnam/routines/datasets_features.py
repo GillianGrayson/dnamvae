@@ -22,6 +22,8 @@ def get_status_pair(dataset: str):
         status = ('diseasestatus', 'Status')
     elif dataset == "GSE53740":
         status = ('diagnosis', 'Status')
+    elif dataset == "GSE87648":
+        status = ('simplified_diagnosis', 'Status')
     return status
 
 
@@ -48,6 +50,8 @@ def get_age_pair(dataset: str):
     elif dataset == "GSE72774":
         age = ("age", "Age")
     elif dataset == "GSE53740":
+        age = ("age", "Age")
+    elif dataset == "GSE87648":
         age = ("age", "Age")
     return age
 
@@ -76,6 +80,8 @@ def get_sex_pair(dataset: str):
         sex = ("Sex", "Sex")
     elif dataset == "GSE53740":
         sex = ("gender", "Sex")
+    elif dataset == "GSE87648":
+        sex = ("Sex", "Sex")
     return sex
 
 def get_status_vals_pairs(dataset: str):
@@ -102,6 +108,8 @@ def get_status_vals_pairs(dataset: str):
         status_group = [("control", "Status: Normal"), ("PD", "Status: Parkinson")]
     elif dataset == "GSE53740":
         status_group = [("Control", "Status: Normal"), ("FTD", "Status: Frontotemporal dementia")]
+    elif dataset == "GSE87648":
+        status_group = [("HL", "Status: Normal"), ("CD", "Status: Crohn's disease")]
     return status_group
 
 
@@ -129,4 +137,6 @@ def get_sex_vals_pairs(dataset: str):
         status_group = [("female", "F"), ("male", "M")]
     elif dataset == "GSE53740":
         status_group = [("FEMALE", "F"), ("MALE", "M")]
+    elif dataset == "GSE87648":
+        status_group = [("F", "F"), ("M", "M")]
     return status_group

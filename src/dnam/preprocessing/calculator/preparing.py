@@ -4,7 +4,7 @@ import os
 from src.dnam.routines.datasets_features import *
 
 
-dataset = "GSE152027"
+dataset = "GSE87648"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
