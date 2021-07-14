@@ -4,7 +4,7 @@ import os
 from src.dnam.routines.datasets_features import *
 
 
-dataset = "GSE87648"
+dataset = "GSE144858"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
@@ -20,7 +20,7 @@ if not os.path.exists(save_path):
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
 pheno = pheno[[age_pair[0], sex_pair[0]]]
-pheno[sex_pair[0]] = pheno[sex_pair[0]].map({sex_vals_pairs[0][0]: 1, sex_vals_pairs[1][0]: 0})
+pheno[sex_pair[0]] = pheno[sex_pair[0]].map({sex_vals_pairs["F"]: 1, status_vals_pairs["M"]: 0})
 pheno.rename(columns={age_pair[0]: 'Age', sex_pair[0]: 'Female'}, inplace=True)
 pheno["Tissue"] = "Blood WB"
 pheno.to_csv(f"{save_path}/pheno.csv", na_rep="NA")
