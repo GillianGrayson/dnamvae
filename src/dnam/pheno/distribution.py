@@ -7,7 +7,7 @@ from src.dnam.routines.datasets_features import *
 import os
 
 
-dataset = "GSE80417"
+dataset = "GSE144858"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
@@ -21,18 +21,19 @@ fig_path = f"{save_path}/figs"
 if not os.path.exists(fig_path):
     os.makedirs(fig_path)
 
-status_pair = tuple([x.replace(' ','_') for x in get_status_pair(dataset)])
-age_pair = tuple([x.replace(' ','_') for x in get_age_pair(dataset)])
-sex_pair = tuple([x.replace(' ','_') for x in get_sex_pair(dataset)])
-status_vals_pairs = get_status_vals_pairs(dataset)
-sex_vals_pairs = get_sex_vals_pairs(dataset)
+status_col = get_column_name(dataset, 'Status').replace(' ','_')
+age_col = get_column_name(dataset, 'Age').replace(' ','_')
+sex_col = get_column_name(dataset, 'Sex').replace(' ','_')
+status_dict = get_status_dict(dataset)
+case_name = get_status_case_name(dataset)
+sex_dict = get_status_dict(dataset)
 
-df_1 = pheno.loc[(pheno[status_pair[0]] == status_vals_pairs[0][0]) & (pheno[age_pair[0]].notnull()), :]
-df_2 = pheno.loc[(pheno[status_pair[0]] == status_vals_pairs[1][0]) & (pheno[age_pair[0]].notnull()), :]
+df_1 = pheno.loc[(pheno[status_col] == status_dict['Control']) & (pheno[age_col].notnull()), :]
+df_2 = pheno.loc[(pheno[status_col] == status_dict['Case']) & (pheno[age_col].notnull()), :]
 
 fig = go.Figure()
-add_histogram_trace(fig, df_1[age_pair[0]].values, f"{status_vals_pairs[0][1]} ({df_1.shape[0]})")
-add_histogram_trace(fig, df_2[age_pair[0]].values, f"{status_vals_pairs[1][1]} ({df_2.shape[0]})")
-add_layout(fig, age_pair[1], "Count", "")
+add_histogram_trace(fig, df_1[age_col].values, f"Control ({df_1.shape[0]})")
+add_histogram_trace(fig, df_2[age_col].values, f"{case_name} ({df_2.shape[0]})")
+add_layout(fig, "Age", "Count", "")
 fig.update_layout(colorway = ['blue', 'red'], barmode = 'overlay')
-save_figure(fig, f"{fig_path}/histogram_{age_pair[1]}_{status_pair[1]}")
+save_figure(fig, f"{fig_path}/histogram_Age_Status")

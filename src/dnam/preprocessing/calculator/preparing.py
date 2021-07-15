@@ -8,20 +8,18 @@ dataset = "GSE144858"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
-status_pair = get_status_pair(dataset)
-age_pair = get_age_pair(dataset)
-sex_pair = get_sex_pair(dataset)
-status_vals_pairs = get_status_vals_pairs(dataset)
-sex_vals_pairs = get_sex_vals_pairs(dataset)
+age_col = get_column_name(dataset, 'Age')
+sex_col = get_column_name(dataset, 'Sex')
+sex_dict = get_sex_dict(dataset)
 
 save_path = f"{path}/{platform}/{dataset}/calculator"
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno.pkl")
-pheno = pheno[[age_pair[0], sex_pair[0]]]
-pheno[sex_pair[0]] = pheno[sex_pair[0]].map({sex_vals_pairs["F"]: 1, status_vals_pairs["M"]: 0})
-pheno.rename(columns={age_pair[0]: 'Age', sex_pair[0]: 'Female'}, inplace=True)
+pheno = pheno[[age_col, sex_col]]
+pheno[sex_col] = pheno[sex_col].map({sex_dict["F"]: 1, sex_dict["M"]: 0})
+pheno.rename(columns={age_col: 'Age', sex_col: 'Female'}, inplace=True)
 pheno["Tissue"] = "Blood WB"
 pheno.to_csv(f"{save_path}/pheno.csv", na_rep="NA")
 

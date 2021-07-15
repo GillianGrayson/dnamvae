@@ -14,7 +14,7 @@ import numpy as np
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE147221"]
+datasets = ["GSE42861", "GSE53740", "GSE72774", "GSE80417", "GSE84727", "GSE87648", "GSE111629", "GSE125105", "GSE128235", "GSE144858", "GSE147221"]
 
 is_rerun = True
 num_cpgs_to_plot = 10
@@ -22,21 +22,22 @@ num_cpgs_to_plot = 10
 for dataset in datasets:
     print(dataset)
 
-    status_pair = tuple([x.replace(' ','_') for x in get_status_pair(dataset)])
-    age_pair = tuple([x.replace(' ','_') for x in get_age_pair(dataset)])
-    sex_pair = tuple([x.replace(' ','_') for x in get_sex_pair(dataset)])
-    status_vals_pairs = get_status_vals_pairs(dataset)
-    status_vals = sorted([x for (x, y) in status_vals_pairs])
-    sex_vals_pairs = get_sex_vals_pairs(dataset)
+    status_col = get_column_name(dataset, 'Status').replace(' ', '_')
+    age_col = get_column_name(dataset, 'Age').replace(' ', '_')
+    sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
+    status_dict = get_status_dict(dataset)
+    status_vals = sorted(list(status_dict.values()))
+    case_name = get_status_case_name(dataset)
+    sex_dict = get_status_dict(dataset)
 
     dnam_acc_type = 'DNAmGrimAgeAcc'
 
-    continuous_vars = [age_pair, (dnam_acc_type, dnam_acc_type)]
-    categorical_vars = {status_pair: status_vals}
+    continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
+    categorical_vars = {status_col: status_dict}
 
-    formula = f"{age_pair[0]} + C({status_pair[0]}) + {dnam_acc_type}"
-    terms = [f"{age_pair[0]}", f"C({status_pair[0]})[T.{status_vals[-1]}]", f"{dnam_acc_type}"]
-    aim = f"{age_pair[1]}_{status_pair[1]}_{dnam_acc_type}"
+    formula = f"{age_col} + C({status_col}) + {dnam_acc_type}"
+    terms = [f"{age_col}", f"C({status_col})[T.{status_vals[-1]}]", f"{dnam_acc_type}"]
+    aim = f"Age_Status_{dnam_acc_type}"
 
     path_save = f"{path}/{platform}/{dataset}/EWAS/from_formula/{aim}"
     if not os.path.exists(f"{path_save}/figs"):
@@ -47,10 +48,10 @@ for dataset in datasets:
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
-    for v in continuous_vars:
-        df = df[df[v[0]].notnull()]
-    for k, v in categorical_vars.items():
-        df = df.loc[df[k[0]].isin(v), :]
+    for name, feat in continuous_vars.items():
+        df = df[df[feat].notnull()]
+    for feat, groups in categorical_vars.items():
+        df = df.loc[df[feat].isin(list(groups.values())), :]
 
     cpgs = betas.columns.values
 
@@ -84,12 +85,16 @@ for dataset in datasets:
 
     result = result.head(num_cpgs_to_plot)
     for cpg_id, (cpg, row) in enumerate(result.iterrows()):
-        fig = go.Figure()
-        for (real, show) in status_vals_pairs:
-            df_curr = df.loc[df[status_pair[0]] == real, :]
-            reg = smf.ols(formula=f"{cpg} ~ {formula}", data=df_curr).fit()
-            add_scatter_trace(fig, df_curr[age_pair[0]].values, df_curr[cpg].values, show)
-            add_scatter_trace(fig, df_curr[age_pair[0]].values, reg.fittedvalues.values, "", "lines")
-        add_layout(fig, age_pair[1], 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
-        fig.update_layout({'colorway': ['blue', 'blue', "red", "red"]})
-        save_figure(fig, f"{path_save}/figs/{cpg_id}_{cpg}")
+        for name_cont, feat_cont in continuous_vars.items():
+            fig = go.Figure()
+            for feat, groups in categorical_vars.items():
+                for group_show, group_val in groups.items():
+                    df_curr = df.loc[df[feat] == group_val, :]
+                    reg = smf.ols(formula=f"{cpg} ~ {feat_cont}", data=df_curr).fit()
+                    add_scatter_trace(fig, df_curr[feat_cont].values, df_curr[cpg].values, group_show)
+                    add_scatter_trace(fig, df_curr[feat_cont].values, reg.fittedvalues.values, "", "lines")
+                add_layout(fig, name_cont, 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
+                fig.update_layout({'colorway': ['blue', 'blue', "red", "red"]})
+                if not os.path.exists(f"{path_save}/figs/{name_cont}"):
+                    os.makedirs(f"{path_save}/figs/{name_cont}")
+                save_figure(fig, f"{path_save}/figs/{name_cont}/{cpg_id}_{cpg}")
