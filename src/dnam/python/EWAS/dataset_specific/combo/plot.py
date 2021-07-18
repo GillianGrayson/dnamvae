@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 from src.dnam.python.routines.plot.save import save_figure
 from src.dnam.python.routines.plot.scatter import add_scatter_trace
 from src.dnam.python.routines.plot.layout import add_layout
+from src.dnam.python.routines.plot.violin import add_violin_trace
 import os
 from scipy.stats import norm
 import math
@@ -25,83 +26,59 @@ path_save = f"{path}/{platform}/combo/EWAS/meta/{target}"
 if not os.path.exists(f"{path_save}"):
     os.makedirs(f"{path_save}")
 
-tables_aim = f"Age_Status_{dnam_acc_type}"
-
-pval_suff = ''
-pval_thld = 1e-4
+num_cpgs_to_plot = 10
 
 manifest = get_manifest(platform)
-tables = manifest[['Gene']]
 
-sizes = {}
-signs = {}
-cols = {'meta':
-    [
-        f'Age_pvalue{pval_suff}',
-        f'Status_pvalue{pval_suff}',
-        f"{dnam_acc_type}_pvalue{pval_suff}"
-    ]
-}
+with open(f"cpgs_to_plot.txt") as f:
+    cpgs = f.read().splitlines()
+
 for dataset in datasets:
     print(dataset)
+
     status_col = get_column_name(dataset, 'Status').replace(' ', '_')
     age_col = get_column_name(dataset, 'Age').replace(' ', '_')
     sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
     status_dict = get_status_dict(dataset)
     status_vals = sorted(list(status_dict.values()))
-    case_name = get_status_case_name(dataset)
+    status_names_dict = get_status_names_dict(dataset)
     sex_dict = get_status_dict(dataset)
-
-    cols[dataset] = [
-        f"{age_col}_pvalue{pval_suff}",
-        f"C({status_col})[T.{status_vals[-1]}]_pvalue{pval_suff}",
-        f"{dnam_acc_type}_pvalue{pval_suff}"
-    ]
 
     continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
     categorical_vars = {status_col: status_dict}
+
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
     pheno.columns = pheno.columns.str.replace(' ', '_')
+    betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
+    df = pd.merge(pheno, betas, left_index=True, right_index=True)
     for name, feat in continuous_vars.items():
-        pheno = pheno[pheno[feat].notnull()]
+        df = df[df[feat].notnull()]
     for feat, groups in categorical_vars.items():
-        pheno = pheno.loc[pheno[feat].isin(list(groups.values())), :]
-    sizes[dataset] = pheno.shape[0]
+        df = df.loc[df[feat].isin(list(groups.values())), :]
 
-    signs[dataset] = 1
+    for cpg_id, cpg in enumerate(cpgs):
+        for name_cont, feat_cont in continuous_vars.items():
+            fig = go.Figure()
+            for feat, groups in categorical_vars.items():
+                for group_show, group_val in groups.items():
+                    df_curr = df.loc[df[feat] == group_val, :]
+                    reg = smf.ols(formula=f"{cpg} ~ {feat_cont}", data=df_curr).fit()
+                    add_scatter_trace(fig, df_curr[feat_cont].values, df_curr[cpg].values, group_show)
+                    add_scatter_trace(fig, df_curr[feat_cont].values, reg.fittedvalues.values, "", "lines")
+                add_layout(fig, name_cont, 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
+                fig.update_layout({'colorway': ['blue', 'blue', "red", "red"]})
+                if not os.path.exists(f"{path_save}/figs/{dataset}/{name_cont}"):
+                    os.makedirs(f"{path_save}/figs/{dataset}/{name_cont}")
+            save_figure(fig, f"{path_save}/figs/{dataset}/{name_cont}/{cpg_id}_{cpg}")
 
-    path_load = f"{path}/{platform}/{dataset}/EWAS/from_formula/{tables_aim}"
-    tbl = pd.read_excel(f"{path_load}/table.xlsx", index_col="CpG")
-    tbl = tbl[cols[dataset]]
-    new_cols = [x + f"_{dataset}" for x in cols[dataset]]
-    cols[dataset] = new_cols
-    tbl = tbl.add_suffix(f"_{dataset}")
-
-    tables = tables.merge(tbl, how='inner', left_index=True, right_index=True)
-
-nums = dict((col, np.zeros(tables.shape[0])) for col in cols['meta'])
-dens = dict((col, 0) for col in cols['meta'])
-for col_id, col in enumerate(cols['meta']):
-    for dataset in datasets:
-        if signs[dataset] < 0:
-            zi = -norm.ppf(tables[cols[dataset][col_id]].values * 0.5)
-        else:
-            zi = norm.ppf(tables[cols[dataset][col_id]].values * 0.5)
-        wi = np.sqrt(sizes[dataset])
-        nums[col] += zi * wi
-        dens[col] += wi * wi
-    z = nums[col] / np.sqrt(dens[col])
-    pvals = 2.0 * norm.cdf(-np.abs(z))
-    tables[col] = pvals
-result = tables[['Gene'] + cols['meta']]
-result = correct_pvalues(result, cols['meta'])
-result.sort_values(cols['meta'], ascending=[True] * len(cols['meta']), inplace=True)
-result.to_excel(f"{path_save}/meta.xlsx", index=True)
-
-# for dataset in datasets:
-#     tables = tables.loc[(tables[cols[dataset][4]] < pval_thld) & (tables[cols[dataset][5]] <= pval_thld)]
-# print(f"Number of CpGs: {tables.shape[0]}")
-# tables.to_excel(f"{path_save}/table.xlsx", index=True)
+        fig = go.Figure()
+        for k, v in status_dict.items():
+            add_violin_trace(fig, df.loc[df[status_col] == v, cpg].values, status_names_dict[k])
+        add_layout(fig, '', "Methylation Level", f"{cpg} ({manifest.loc[cpg, 'Gene']})")
+        fig.update_layout({'colorway': ['blue', "red"]})
+        if not os.path.exists(f"{path_save}/figs/{dataset}/status"):
+            os.makedirs(f"{path_save}/figs/{dataset}/status")
+        save_figure(fig, f"{path_save}/figs/{dataset}/status/{cpg_id}_{cpg}")
 
 
 
