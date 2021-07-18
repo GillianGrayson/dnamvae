@@ -29,7 +29,7 @@ status_col = get_column_name(dataset, 'Status').replace(' ','_')
 age_col = get_column_name(dataset, 'Age').replace(' ','_')
 sex_col = get_column_name(dataset, 'Sex').replace(' ','_')
 status_dict = get_status_dict(dataset)
-case_name = get_status_case_name(dataset)
+status_names_dict = get_status_names_dict(dataset)
 sex_dict = get_status_dict(dataset)
 
 y_feats = ["DNAmAge", "DNAmAgeHannum", "DNAmPhenoAge", "DNAmGrimAge"]
@@ -55,9 +55,9 @@ for y_id, y in enumerate(y_feats):
         df_2 = pheno.loc[(pheno[status_col] == status_dict['Case']) & (pheno[age_col].notnull()), :]
 
     scatter = go.Figure()
-    add_scatter_trace(scatter, df_1[age_col].values, df_1[y].values, 'Control')
+    add_scatter_trace(scatter, df_1[age_col].values, df_1[y].values, status_names_dict['Control'])
     add_scatter_trace(scatter, df_1[age_col].values, reg.fittedvalues.values, "", "lines")
-    add_scatter_trace(scatter, df_2[age_col].values, df_2[y].values, case_name)
+    add_scatter_trace(scatter, df_2[age_col].values, df_2[y].values, status_names_dict['Case'])
     add_layout(scatter, "Age", y, "")
     scatter.update_layout({'colorway': ['blue', 'blue', 'red']})
     save_figure(scatter, f"{fig_path}/scatter_Age_{y}")
@@ -67,8 +67,8 @@ for y_id, y in enumerate(y_feats):
     res_dict['MW_pvalue'][y_id] = pvalue
 
     box = go.Figure()
-    add_box_trace(box, df_1[res_names[y_id]].values, 'Control')
-    add_box_trace(box, df_2[res_names[y_id]].values, case_name)
+    add_box_trace(box, df_1[res_names[y_id]].values, status_names_dict['Control'])
+    add_box_trace(box, df_2[res_names[y_id]].values, status_names_dict['Case'])
     add_layout(box, "", res_names[y_id], f"{res_names[y_id]}: {pvalue:0.4e}")
     box.update_layout({'colorway': ['blue', 'red']})
     save_figure(box, f"{fig_path}/box_{res_names[y_id]}")

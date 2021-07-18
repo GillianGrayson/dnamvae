@@ -41,8 +41,8 @@ for dataset in datasets:
     sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
     status_dict = get_status_dict(dataset)
     status_vals = sorted(list(status_dict.values()))
-    case_name = get_status_names_dict(dataset)
-    sex_dict = get_status_dict(dataset)
+    status_names_dict = get_status_names_dict(dataset)
+    sex_dict = get_sex_dict(dataset)
 
     cols[dataset] = [
         f"{age_col}_pvalue{pval_suff}",

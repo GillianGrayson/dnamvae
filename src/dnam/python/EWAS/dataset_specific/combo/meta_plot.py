@@ -1,7 +1,5 @@
 import pandas as pd
 from src.dnam.python.routines.manifest import get_manifest
-from tqdm import tqdm
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
 import statsmodels.formula.api as smf
 import plotly.graph_objects as go
 from src.dnam.python.routines.plot.save import save_figure
@@ -9,15 +7,12 @@ from src.dnam.python.routines.plot.scatter import add_scatter_trace
 from src.dnam.python.routines.plot.layout import add_layout
 from src.dnam.python.routines.plot.violin import add_violin_trace
 import os
-from scipy.stats import norm
-import math
-import numpy as np
 from src.dnam.python.routines.datasets_features import *
 
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE147221", "GSE84727",]
+datasets = ["GSE147221", "GSE84727", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
 
 dnam_acc_type = 'DNAmGrimAgeAcc'
 
@@ -30,7 +25,7 @@ num_cpgs_to_plot = 10
 
 manifest = get_manifest(platform)
 
-with open(f"cpgs_to_plot.txt") as f:
+with open(f"cpgs.txt") as f:
     cpgs = f.read().splitlines()
 
 for dataset in datasets:
@@ -79,6 +74,3 @@ for dataset in datasets:
         if not os.path.exists(f"{path_save}/figs/{dataset}/status"):
             os.makedirs(f"{path_save}/figs/{dataset}/status")
         save_figure(fig, f"{path_save}/figs/{dataset}/status/{cpg_id}_{cpg}")
-
-
-

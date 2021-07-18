@@ -25,7 +25,7 @@ library(FlowSorted.Blood.EPIC)
 library(FlowSorted.Blood.450k)
 library(FlowSorted.DLPFC.450k)
 
-path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL13534/GSE87648/raw/idat"
+path <- "E:/YandexDisk/Work/pydnameth/datasets/GPL13534/GSE156994/raw/idat"
 chip_type = "450K"
 detPcut = 0.01
 
