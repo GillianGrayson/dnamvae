@@ -9,7 +9,8 @@ from src.dnam.python.routines.plot.layout import add_layout
 import os
 import numpy as np
 from pingouin import ancova
-
+from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
@@ -21,32 +22,27 @@ num_cpgs_to_plot = 10
 for dataset in datasets:
     print(dataset)
 
-    status_pair = tuple([x.replace(' ','_') for x in get_status_pair(dataset)])
-    age_pair = tuple([x.replace(' ','_') for x in get_age_pair(dataset)])
-    sex_pair = tuple([x.replace(' ','_') for x in get_sex_pair(dataset)])
-    status_vals_pairs = get_status_vals_pairs(dataset)
-    sex_vals_pairs = get_sex_vals_pairs(dataset)
+    status_col = get_column_name(dataset, 'Status').replace(' ', '_')
+    age_col = get_column_name(dataset, 'Age').replace(' ', '_')
+    sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
+    status_dict = get_status_dict(dataset)
+    status_vals = sorted(list(status_dict.values()))
+    status_names_dict = get_status_names_dict(dataset)
+    sex_dict = get_sex_dict(dataset)
 
-    cont_feat = age_pair[0]
-    cont_show = age_pair[1]
-    cat_feat = status_pair[0]
-    cat_show = status_pair[1]
-
-    status_vals = sorted([x for (x,y) in status_vals_pairs])
-    terms = [cat_feat, cont_feat]
-    aim = f"{cont_show}_{cat_show}"
+    terms = [status_col, age_col]
+    aim = f"Age_Status"
 
     path_save = f"{path}/{platform}/{dataset}/EWAS/ancova/{aim}"
     if not os.path.exists(f"{path_save}/figs"):
         os.makedirs(f"{path_save}/figs")
 
+    continuous_vars = {'Age': age_col}
+    categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno.columns = pheno.columns.str.replace(' ', '_')
+    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
-
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
-    df = df[df[cont_feat].notnull()]
-    df = df.loc[df[status_pair[0]].isin(status_vals), :]
 
     cpgs = betas.columns.values
 
@@ -60,7 +56,7 @@ for dataset in datasets:
 
         for cpg_id, cpg in tqdm(enumerate(cpgs), desc='from_formula', total=len(cpgs)):
             result['Gene'][cpg_id] = manifest.loc[cpg, 'Gene']
-            res = ancova(data=df, dv=cpg, covar=cont_feat, between=cat_feat)
+            res = ancova(data=df, dv=cpg, covar=age_col, between=status_col)
             for t in terms:
                 result[f"{t}_pval"][cpg_id] = res.loc[res['Source'] == t, 'p-unc'].values[0]
 
@@ -75,8 +71,8 @@ for dataset in datasets:
     result = result.head(num_cpgs_to_plot)
     for cpg_id, (cpg, row) in enumerate(result.iterrows()):
         fig = go.Figure()
-        for (real, show) in status_vals_pairs:
-            add_scatter_trace(fig,  df.loc[df[status_pair[0]] == real, cont_feat].values, df.loc[df[status_pair[0]] == real, cpg].values, show)
-        add_layout(fig, cont_show, 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
+        add_scatter_trace(fig,  df.loc[df[status_col] == status_dict['Control'], age_col].values, df.loc[df[status_col] == status_dict['Control'], cpg].values, status_names_dict['Control'])
+        add_scatter_trace(fig, df.loc[df[status_col] == status_dict['Case'], age_col].values, df.loc[df[status_col] == status_dict['Case'], cpg].values, status_names_dict['Case'])
+        add_layout(fig, "Age", 'Methylation Level', f"{cpg} ({manifest.loc[cpg, 'Gene']})")
         fig.update_layout({'colorway': ['blue', "red"]})
         save_figure(fig, f"{path_save}/figs/{cpg_id}_{cpg}")

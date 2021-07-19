@@ -24,6 +24,7 @@ df.rename(columns={df.columns[0]: 'CpG'}, inplace=True)
 df.set_index('CpG', inplace=True)
 betas = df.T
 betas.index.name = "subject_id"
+betas.dropna(axis='columns', how='any', inplace=True)
 betas = manifest_filter(betas, manifest)
 forbidden_cpgs = get_forbidden_cpgs(f"{path}/{platform}/manifest/forbidden_cpgs", forbidden_types)
 betas = betas.loc[:, ~betas.columns.isin(forbidden_cpgs)]

@@ -7,6 +7,7 @@ from src.dnam.python.routines.plot.scatter import add_scatter_trace
 from src.dnam.python.routines.plot.layout import add_layout
 import statsmodels.formula.api as smf
 from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
 dataset = "GSE147221"
@@ -27,16 +28,11 @@ get_status_names = get_status_names_dict(dataset)
 sex_dict = get_sex_dict(dataset)
 
 continuous_vars = {'Age': age_col, 'DNAmGrimAgeAcc': 'DNAmGrimAgeAcc'}
-categorical_vars = {status_col: status_dict}
-
+categorical_vars = {status_col: status_dict, sex_col: sex_dict}
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-pheno.columns = pheno.columns.str.replace(' ', '_')
+pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
 betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 df = pd.merge(pheno, betas, left_index=True, right_index=True)
-for name, feat in continuous_vars.items():
-    df = df[df[feat].notnull()]
-for feat, groups in categorical_vars.items():
-    df = df.loc[df[feat].isin(list(groups.values())), :]
 
 with open(f"cpgs_to_plot.txt") as f:
     cpgs = f.read().splitlines()

@@ -5,16 +5,14 @@ from src.dnam.python.routines.plot.histogram import add_histogram_trace
 from src.dnam.python.routines.plot.layout import add_layout
 import os
 from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
-dataset = "GSE144858"
+dataset = "GSE53740"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
 is_update = True
-
-pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-pheno.columns = pheno.columns.str.replace(' ','_')
 
 save_path = f"{path}/{platform}/{dataset}/pheno/distribution"
 fig_path = f"{save_path}/figs"
@@ -26,10 +24,15 @@ age_col = get_column_name(dataset, 'Age').replace(' ','_')
 sex_col = get_column_name(dataset, 'Sex').replace(' ','_')
 status_dict = get_status_dict(dataset)
 get_status_names = get_status_names_dict(dataset)
-sex_dict = get_status_dict(dataset)
+sex_dict = get_sex_dict(dataset)
 
-df_1 = pheno.loc[(pheno[status_col] == status_dict['Control']) & (pheno[age_col].notnull()), :]
-df_2 = pheno.loc[(pheno[status_col] == status_dict['Case']) & (pheno[age_col].notnull()), :]
+continuous_vars = {'Age': age_col}
+categorical_vars = {status_col: status_dict, sex_col: sex_dict}
+pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
+pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+
+df_1 = pheno.loc[(pheno[status_col] == status_dict['Control']), :]
+df_2 = pheno.loc[(pheno[status_col] == status_dict['Case']), :]
 
 fig = go.Figure()
 add_histogram_trace(fig, df_1[age_col].values, f"{get_status_names['Control']} ({df_1.shape[0]})")

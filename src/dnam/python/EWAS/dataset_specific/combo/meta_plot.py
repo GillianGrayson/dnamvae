@@ -8,6 +8,7 @@ from src.dnam.python.routines.plot.layout import add_layout
 from src.dnam.python.routines.plot.violin import add_violin_trace
 import os
 from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
 platform = "GPL13534"
@@ -40,16 +41,11 @@ for dataset in datasets:
     sex_dict = get_status_dict(dataset)
 
     continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
-    categorical_vars = {status_col: status_dict}
-
+    categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno.columns = pheno.columns.str.replace(' ', '_')
+    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
-    for name, feat in continuous_vars.items():
-        df = df[df[feat].notnull()]
-    for feat, groups in categorical_vars.items():
-        df = df.loc[df[feat].isin(list(groups.values())), :]
 
     for cpg_id, cpg in enumerate(cpgs):
         for name_cont, feat_cont in continuous_vars.items():

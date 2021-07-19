@@ -9,6 +9,8 @@ from src.dnam.python.EWAS.routines.correction import correct_pvalues
 from src.dnam.python.routines.plot.save import save_figure
 from src.dnam.python.routines.plot.layout import add_layout
 from src.dnam.python.routines.plot.box import add_box_trace
+from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
 dataset = "GSE125105"
@@ -18,22 +20,27 @@ path = f"E:/YandexDisk/Work/pydnameth/datasets"
 is_rerun = True
 num_cpgs_to_plot = 10
 
-status_pair = get_status_pair(dataset)
-age_pair = get_age_pair(dataset)
-sex_pair = get_sex_pair(dataset)
-status_vals_pairs = get_status_vals_pairs(dataset)
-sex_vals_pairs = get_sex_vals_pairs(dataset)
+status_col = get_column_name(dataset, 'Status').replace(' ','_')
+age_col = get_column_name(dataset, 'Age').replace(' ','_')
+sex_col = get_column_name(dataset, 'Sex').replace(' ','_')
+status_dict = get_status_dict(dataset)
+status_names_dict = get_status_names_dict(dataset)
+sex_dict = get_sex_dict(dataset)
 
 path_save = f"{path}/{platform}/{dataset}/EWAS/mann_whitney_u_test"
 if not os.path.exists(f"{path_save}/figs"):
     os.makedirs(f"{path_save}/figs")
 
+continuous_vars = {'Age': age_col}
+categorical_vars = {status_col: status_dict, sex_col: sex_dict}
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
+pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+
 betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
-df_global = pd.merge(pheno, betas, left_index=True, right_index=True)
-df_1 = df_global.loc[df_global[status_pair[0]] == status_vals_pairs[0][0], :]
-df_2 = df_global.loc[df_global[status_pair[0]] == status_vals_pairs[1][0], :]
+df = pd.merge(pheno, betas, left_index=True, right_index=True)
+df_1 = df.loc[(df[status_col] == status_dict['Control']), :]
+df_2 = df.loc[(df[status_col] == status_dict['Case']), :]
 
 cpgs = betas.columns.values
 
@@ -65,8 +72,8 @@ else:
 result = result.head(num_cpgs_to_plot)
 for cpg_id, (cpg, row) in enumerate(result.iterrows()):
     fig = go.Figure()
-    add_box_trace(fig, df_1[cpg].values, status_vals_pairs[0][1])
-    add_box_trace(fig, df_2[cpg].values, status_vals_pairs[1][1])
+    add_box_trace(fig, df_1[cpg].values, status_names_dict['Control'])
+    add_box_trace(fig, df_2[cpg].values, status_names_dict['Case'])
     add_layout(fig, '', "Methylation Level", f"{cpg} ({manifest.loc[cpg, 'Gene']}): {row['pval']:0.4e}")
     fig.update_layout({'colorway': ['blue', "red"]})
     save_figure(fig, f"{path_save}/figs/{cpg_id}_{cpg}")

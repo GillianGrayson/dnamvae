@@ -11,6 +11,8 @@ from src.dnam.python.EWAS.routines.correction import correct_pvalues
 from src.dnam.python.routines.plot.save import save_figure
 from src.dnam.python.routines.plot.scatter import add_scatter_trace
 from src.dnam.python.routines.plot.layout import add_layout
+from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
@@ -28,28 +30,28 @@ for dataset in datasets:
 
     path_save = f"{path}/{platform}/{dataset}/EWAS/cpg_vs_continuous/control"
 
-    status_pair = tuple([x.replace(' ','_') for x in get_status_pair(dataset)])
-    age_pair = tuple([x.replace(' ','_') for x in get_age_pair(dataset)])
-    sex_pair = tuple([x.replace(' ','_') for x in get_sex_pair(dataset)])
-    status_vals_pairs = get_status_vals_pairs(dataset)
-    status_vals = sorted([x for (x,y) in status_vals_pairs])
-    sex_vals_pairs = get_sex_vals_pairs(dataset)
+    status_col = get_column_name(dataset, 'Status').replace(' ', '_')
+    age_col = get_column_name(dataset, 'Age').replace(' ', '_')
+    sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
+    status_dict = get_status_dict(dataset)
+    status_vals = sorted(list(status_dict.values()))
+    status_names_dict = get_status_names_dict(dataset)
+    sex_dict = get_sex_dict(dataset)
 
+    continuous_vars = {'Age': age_col}
+    categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno.columns = pheno.columns.str.replace(' ','_')
+    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
-    df = df.loc[df[status_pair[0]].isin(status_vals), :]
-
-    df_1 = df.loc[df[status_pair[0]] == status_vals_pairs[0][0], :]
-    df_2 = df.loc[df[status_pair[0]] == status_vals_pairs[1][0], :]
+    df_1 = df.loc[(df[status_col] == status_dict['Control']), :]
+    df_2 = df.loc[(df[status_col] == status_dict['Case']), :]
 
     cpgs = betas.columns.values
 
     manifest = get_manifest(platform)
 
     for k, v in feats.items():
-
         df_1_curr = df_1[df_1[k].notnull()]
         df_2_curr = df_2[df_2[k].notnull()]
 
@@ -91,9 +93,9 @@ for dataset in datasets:
         for cpg_id, (cpg, row) in enumerate(result.iterrows()):
             reg = smf.ols(formula=f"{cpg} ~ {k}", data=df_1_curr).fit()
             fig = go.Figure()
-            add_scatter_trace(fig, df_1_curr[k].values, df_1_curr[cpg].values, status_vals_pairs[0][1])
+            add_scatter_trace(fig, df_1_curr[k].values, df_1_curr[cpg].values, status_names_dict['Control'])
             add_scatter_trace(fig, df_1_curr[k].values, reg.fittedvalues.values, "", "lines")
-            add_scatter_trace(fig, df_2_curr[k].values, df_2_curr[cpg].values, status_vals_pairs[1][1])
+            add_scatter_trace(fig, df_2_curr[k].values, df_2_curr[cpg].values, status_names_dict['Case'])
             add_layout(fig, f"{v}", 'Methylation Level', f"{cpg} ({row['Gene']})")
             fig.update_layout({'colorway': ['blue', 'blue', "red"]})
             save_figure(fig, f"{path_curr}/{cpg_id}_{cpg}")

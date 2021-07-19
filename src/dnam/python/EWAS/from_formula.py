@@ -10,11 +10,12 @@ from src.dnam.python.routines.plot.layout import add_layout
 import os
 import numpy as np
 from src.dnam.python.routines.datasets_features import *
+from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE156994", "GSE106648", "GSE42861", "GSE53740", "GSE72774", "GSE80417", "GSE84727", "GSE87648", "GSE111629", "GSE125105", "GSE128235", "GSE144858", "GSE147221"]
+datasets = ["GSE147221", "GSE84727", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
 
 is_rerun = True
 num_cpgs_to_plot = 10
@@ -27,24 +28,24 @@ for dataset in datasets:
     sex_col = get_column_name(dataset, 'Sex').replace(' ', '_')
     status_dict = get_status_dict(dataset)
     status_vals = sorted(list(status_dict.values()))
-    case_name = get_status_case_name(dataset)
-    sex_dict = get_status_dict(dataset)
+    status_names_dict = get_status_names_dict(dataset)
+    sex_dict = get_sex_dict(dataset)
+    sex_vals = sorted(list(sex_dict.values()))
 
     dnam_acc_type = 'DNAmGrimAgeAcc'
 
-    continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
-    categorical_vars = {status_col: status_dict}
-
-    formula = f"{age_col} + C({status_col}) + {dnam_acc_type}"
-    terms = [f"{age_col}", f"C({status_col})[T.{status_vals[-1]}]", f"{dnam_acc_type}"]
-    aim = f"Age_Status_{dnam_acc_type}"
+    formula = f"{age_col} + C({sex_col}) + C({status_col})"
+    terms = [f"{age_col}", f"C({sex_col})[T.{sex_vals[-1]}]", f"C({status_col})[T.{status_vals[-1]}]", ]
+    aim = f"Age_Sex_Status"
 
     path_save = f"{path}/{platform}/{dataset}/EWAS/from_formula/{aim}"
     if not os.path.exists(f"{path_save}/figs"):
         os.makedirs(f"{path_save}/figs")
 
+    continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
+    categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno.columns = pheno.columns.str.replace(' ', '_')
+    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
