@@ -14,7 +14,7 @@ from src.dnam.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE42861", "GSE80417", "GSE84727", "GSE125105", "GSE147221"]
+datasets = ["GSE53740"]
 
 is_rerun = True
 num_cpgs_to_plot = 10

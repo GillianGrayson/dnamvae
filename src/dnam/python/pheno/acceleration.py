@@ -71,8 +71,6 @@ for dataset in datasets:
 
         statistic, pvalue = mannwhitneyu(df_1[res_names[y_id]].values, df_2[res_names[y_id]].values)
 
-        statistic_epta, pvalue_epta = mannwhitneyu(df_1[res_names[y_id]].dropna().values, df_2[res_names[y_id]].dropna().values)
-
         res_dict['MW_statistic'][y_id] = statistic
         res_dict['MW_pvalue'][y_id] = pvalue
 

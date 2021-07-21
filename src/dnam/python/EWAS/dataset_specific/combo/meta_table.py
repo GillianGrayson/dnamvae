@@ -6,11 +6,14 @@ from scipy.stats import norm
 import numpy as np
 from src.dnam.python.routines.datasets_features import *
 from src.dnam.python.routines.filter.pheno import filter_pheno
+import upsetplot as upset
+from matplotlib import pyplot
 
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets = ["GSE147221", "GSE84727", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
+#datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
+datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774"]
 
 dnam_acc_type = 'DNAmGrimAgeAcc'
 
@@ -22,7 +25,7 @@ if not os.path.exists(f"{path_save}"):
 tables_aim = f"Age_Status_{dnam_acc_type}"
 
 pval_suff = '_fdr_bh'
-pval_thld = 1e-2
+pval_thld = 0.05
 
 manifest = get_manifest(platform)
 tables_meta = manifest[['Gene']]
@@ -57,6 +60,8 @@ for dataset in datasets:
         f"C({status_col})[T.{status_vals[-1]}]_pvalue{pval_suff}",
     ]
 
+    #single_cols[dataset] = [single_cols[dataset][-1]]
+
     continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
@@ -85,6 +90,22 @@ for dataset in datasets:
 
 print(f'Total number of subjects: {sum(sizes.values())}')
 
+upset_df = pd.DataFrame(index=tables_single.index)
+for dataset in datasets:
+    upset_df[dataset] = (tables_single[single_cols[dataset][0]] < pval_thld)
+    for col in  single_cols[dataset][1::]:
+        upset_df[dataset] =  upset_df[dataset] & (tables_single[col] < pval_thld)
+upset_df = upset_df.set_index(datasets)
+plt = upset.UpSet(upset_df, subset_size='count', show_counts=True).plot()
+pyplot.savefig(f"{path_save}/single.png", bbox_inches='tight')
+pyplot.savefig(f"{path_save}/single.pdf", bbox_inches='tight')
+
+for dataset in datasets:
+    for col in single_cols[dataset]:
+        tables_single = tables_single.loc[(tables_single[col] < pval_thld), :]
+        print(f"Number of CpGs: {tables_single.shape[0]}")
+tables_single.to_excel(f"{path_save}/single.xlsx", index=True)
+
 nums = dict((col, np.zeros(tables_meta.shape[0])) for col in meta_cols['meta'])
 dens = dict((col, 0) for col in meta_cols['meta'])
 for col_id, col in enumerate(meta_cols['meta']):
@@ -104,11 +125,11 @@ result = correct_pvalues(result, meta_cols['meta'])
 result.sort_values(meta_cols['meta'], ascending=[True] * len(meta_cols['meta']), inplace=True)
 result.to_excel(f"{path_save}/meta.xlsx", index=True)
 
-for dataset in datasets:
-    for col in single_cols[dataset]:
-        tables_single = tables_single.loc[(tables_single[col] < pval_thld), :]
-        print(f"Number of CpGs: {tables_single.shape[0]}")
-tables_single.to_excel(f"{path_save}/single.xlsx", index=True)
+
+
+
+
+
 
 
 

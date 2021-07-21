@@ -13,7 +13,7 @@ from src.dnam.python.routines.datasets_features import *
 from src.dnam.python.routines.filter.pheno import filter_pheno
 
 
-dataset = "GSE125105"
+dataset = "GSE53740"
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
 
