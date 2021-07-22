@@ -18,7 +18,7 @@ from src.dnam.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-datasets_train = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774"]
+datasets_train = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
 datasets_test = ["GSE147221", "GSE84727", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858", "GSE42861", "GSE87648", "GSE106648"]
 
 dnam_acc_type = 'DNAmGrimAgeAcc'
@@ -50,6 +50,9 @@ for d_id, dataset in enumerate(datasets_train):
     na_cols = betas.columns[betas.isna().any()].tolist()
     if len(na_cols) > 0:
         print(f"CpGs with NaNs in {dataset}: {na_cols}")
+        s = betas.stack(dropna=False)
+        na_pairs = [list(x) for x in s.index[s.isna()]]
+        print(*na_pairs, sep='\n')
     betas.dropna(axis='columns', how='any', inplace=True)
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
 
@@ -159,6 +162,9 @@ for d_id, dataset in enumerate(datasets_test):
     na_cols = betas.columns[betas.isna().any()].tolist()
     if len(na_cols) > 0:
         print(f"CpGs with NaNs in {dataset}: {na_cols}")
+        s = betas.stack(dropna=False)
+        na_pairs = [list(x) for x in s.index[s.isna()]]
+        print(*na_pairs, sep='\n')
     betas.dropna(axis='columns', how='any', inplace=True)
     df = pd.merge(pheno, betas, left_index=True, right_index=True)
     df[f'AgeEST'] = model.predict(df.loc[:, cpgs_target].to_numpy())

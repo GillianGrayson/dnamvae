@@ -12,8 +12,8 @@ from matplotlib import pyplot
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"
-#datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
-datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774"]
+datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774", "GSE53740", "GSE144858"]
+#datasets = ["GSE84727", "GSE147221", "GSE125105", "GSE111629", "GSE128235", "GSE72774"]
 
 dnam_acc_type = 'DNAmGrimAgeAcc'
 
