@@ -29,7 +29,7 @@ sex_dict = get_sex_dict(dataset)
 continuous_vars = {'Age': age_col}
 categorical_vars = {status_col: status_dict, sex_col: sex_dict}
 pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
 
 df_1 = pheno.loc[(pheno[status_col] == status_dict['Control']), :]
 df_2 = pheno.loc[(pheno[status_col] == status_dict['Case']), :]

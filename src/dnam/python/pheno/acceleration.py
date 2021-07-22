@@ -37,7 +37,7 @@ for dataset in datasets:
     continuous_vars = {'Age': age_col}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+    pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
 
     y_feats = ["DNAmAge", "DNAmAgeHannum", "DNAmPhenoAge", "DNAmGrimAge"]
     res_names = ["DNAmAgeAcc", "DNAmAgeHannumAcc", "DNAmPhenoAgeAcc", "DNAmGrimAgeAcc"]

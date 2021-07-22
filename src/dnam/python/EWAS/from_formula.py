@@ -45,7 +45,7 @@ for dataset in datasets:
     continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+    pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
 
     df = pd.merge(pheno, betas, left_index=True, right_index=True)

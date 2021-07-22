@@ -65,7 +65,7 @@ for dataset in datasets:
     continuous_vars = {'Age': age_col, dnam_acc_type: dnam_acc_type}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+    pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
     sizes[dataset] = pheno.shape[0]
     print(f'Number of subjects: {pheno.shape[0]}')
     print(f"Number of Control: {pheno.loc[pheno[status_col] == status_dict['Control'], :].shape[0]}")

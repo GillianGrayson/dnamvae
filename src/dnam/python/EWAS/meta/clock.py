@@ -45,7 +45,7 @@ for d_id, dataset in enumerate(datasets_train):
     continuous_vars = {'Age': age_col}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+    pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
     na_cols = betas.columns[betas.isna().any()].tolist()
     if len(na_cols) > 0:
@@ -157,7 +157,7 @@ for d_id, dataset in enumerate(datasets_test):
     continuous_vars = {'Age': age_col}
     categorical_vars = {status_col: status_dict, sex_col: sex_dict}
     pheno = pd.read_pickle(f"{path}/{platform}/{dataset}/pheno_xtd.pkl")
-    pheno = filter_pheno(pheno, continuous_vars, categorical_vars)
+    pheno = filter_pheno(dataset, pheno, continuous_vars, categorical_vars)
     betas = pd.read_pickle(f"{path}/{platform}/{dataset}/betas.pkl")
     na_cols = betas.columns[betas.isna().any()].tolist()
     if len(na_cols) > 0:
