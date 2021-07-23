@@ -91,6 +91,12 @@ def get_columns_dict(dataset: str):
             'Age': 'age',
             'Sex': 'Sex',
         }
+    elif dataset == "GSEUNN":
+        d = {
+            'Status': 'Status',
+            'Age': 'Age',
+            'Sex': 'Sex',
+        }
     return d
 
 
@@ -131,6 +137,8 @@ def get_status_dict(dataset: str):
         d = {"Control": "Healthy control", "Case": "MS case"}
     elif dataset == "GSE156994":
         d = {"Control": "CTRL", "Case": "sCJD"}
+    elif dataset == "GSEUNN":
+        d = {"Control": "Control", "Case": "ESRD"}
     return d
 
 
@@ -151,6 +159,7 @@ def get_status_names_dict(dataset: str):
         'GSE144858': {"Control": "Control", "Case": "Alzheimer's disease"},
         'GSE106648': {"Control": "Control", "Case": "Multiple Sclerosis"},
         'GSE156994': {"Control": "Control", "Case": "Sporadic Creutzfeldt-Jakob disease"},
+        'GSEUNN': {"Control": "Control", "Case": "ESRD"},
     }
     return d[dataset]
 
@@ -187,4 +196,6 @@ def get_sex_dict(dataset: str):
         d = {"F": "female", "M": "male"}
     elif dataset == "GSE156994":
         d = {"F": "Female", "M": "Male"}
+    elif dataset == "GSEUNN":
+        d = {"F": "F", "M": "M"}
     return d
