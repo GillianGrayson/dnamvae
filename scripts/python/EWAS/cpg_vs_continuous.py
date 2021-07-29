@@ -1,5 +1,5 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
+from scripts.python.routines.manifest import get_manifest
 import os
 import numpy as np
 from tqdm import tqdm
@@ -7,12 +7,11 @@ import plotly.graph_objects as go
 import statsmodels.formula.api as smf
 from scipy.stats import pearsonr
 from scipy.stats import spearmanr
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.layout import add_layout
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.EWAS.routines.correction import correct_pvalues
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.scatter import add_scatter_trace
+from scripts.python.routines.plot.layout import add_layout
+from scripts.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"

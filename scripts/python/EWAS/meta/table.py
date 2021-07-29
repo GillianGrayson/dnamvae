@@ -1,11 +1,10 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
+from scripts.python.routines.manifest import get_manifest
+from scripts.python.EWAS.routines.correction import correct_pvalues
 import os
 from scipy.stats import norm
 import numpy as np
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.routines.filter.pheno import filter_pheno
 import upsetplot as upset
 from matplotlib import pyplot
 

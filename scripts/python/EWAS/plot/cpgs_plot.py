@@ -1,13 +1,12 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
+from scripts.python.routines.manifest import get_manifest
 import os
 import plotly.graph_objects as go
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.layout import add_layout
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.scatter import add_scatter_trace
+from scripts.python.routines.plot.layout import add_layout
 import statsmodels.formula.api as smf
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.routines.filter.pheno import filter_pheno
 
 
 dataset = "GSE147221"

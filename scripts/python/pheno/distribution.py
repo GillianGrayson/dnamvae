@@ -1,11 +1,10 @@
 import pandas as pd
 import plotly.graph_objects as go
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.histogram import add_histogram_trace
-from src.dnam.python.routines.plot.layout import add_layout
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.histogram import add_histogram_trace
+from scripts.python.routines.plot.layout import add_layout
 import os
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.routines.filter.pheno import filter_pheno
 
 
 dataset = "GSE53740"

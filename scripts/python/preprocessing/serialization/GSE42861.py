@@ -1,8 +1,8 @@
 import pandas as pd
-from src.dnam.python.preprocessing.serialization.routines.filter import get_forbidden_cpgs, manifest_filter
-from src.dnam.python.preprocessing.serialization.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
-from src.dnam.python.preprocessing.serialization.routines.save import save_pheno_betas_to_pkl
-from src.dnam.python.routines.manifest import get_manifest
+from scripts.python.preprocessing.serialization.routines.filter import get_forbidden_cpgs, manifest_filter
+from scripts.python.preprocessing.serialization.routines.pheno_betas_checking import get_pheno_betas_with_common_subjects
+from scripts.python.preprocessing.serialization.routines.save import save_pheno_betas_to_pkl
+from scripts.python.routines.manifest import get_manifest
 
 
 dataset = "GSE42861"

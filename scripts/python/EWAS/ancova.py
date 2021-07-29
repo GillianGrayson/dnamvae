@@ -1,16 +1,15 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
+from scripts.python.routines.manifest import get_manifest
 from tqdm import tqdm
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
+from scripts.python.EWAS.routines.correction import correct_pvalues
 import plotly.graph_objects as go
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.layout import add_layout
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.scatter import add_scatter_trace
+from scripts.python.routines.plot.layout import add_layout
 import os
 import numpy as np
 from pingouin import ancova
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.routines.filter.pheno import filter_pheno
 
 platform = "GPL13534"
 path = f"E:/YandexDisk/Work/pydnameth/datasets"

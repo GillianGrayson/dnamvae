@@ -1,16 +1,15 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
+from scripts.python.routines.manifest import get_manifest
 import plotly.graph_objects as go
 import numpy as np
 import os
 from tqdm import tqdm
 from scipy.stats import mannwhitneyu
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.layout import add_layout
-from src.dnam.python.routines.plot.box import add_box_trace
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.EWAS.routines.correction import correct_pvalues
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.layout import add_layout
+from scripts.python.routines.plot.box import add_box_trace
+from scripts.python.routines.filter.pheno import filter_pheno
 
 
 dataset = "GSE53740"

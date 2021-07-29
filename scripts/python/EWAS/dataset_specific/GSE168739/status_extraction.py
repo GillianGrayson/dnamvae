@@ -1,8 +1,8 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.layout import add_layout
+from scripts.python.routines.manifest import get_manifest
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.scatter import add_scatter_trace
+from scripts.python.routines.plot.layout import add_layout
 import os
 import plotly.graph_objects as go
 

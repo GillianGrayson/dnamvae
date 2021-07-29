@@ -1,17 +1,5 @@
 import pandas as pd
-from src.dnam.python.routines.manifest import get_manifest
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.layout import add_layout
-import os
-import plotly.graph_objects as go
-import statsmodels.formula.api as smf
 import numpy as np
-from tqdm import tqdm
-from src.dnam.python.EWAS.routines.correction import correct_pvalues
-from scipy.stats import pearsonr
-from scipy.stats import spearmanr
-
 
 dataset = "GSEUNN"
 platform = "GPL21145"

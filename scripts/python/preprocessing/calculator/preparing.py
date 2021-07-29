@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import os
-from src.dnam.python.routines.datasets_features import *
-
 
 dataset = "GSE156994"
 platform = "GPL13534"

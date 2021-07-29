@@ -1,16 +1,14 @@
-from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 from scipy.stats import mannwhitneyu
 import statsmodels.formula.api as smf
 import plotly.graph_objects as go
-from src.dnam.python.routines.plot.save import save_figure
-from src.dnam.python.routines.plot.scatter import add_scatter_trace
-from src.dnam.python.routines.plot.violin import add_violin_trace
-from src.dnam.python.routines.plot.layout import add_layout
+from scripts.python.routines.plot.save import save_figure
+from scripts.python.routines.plot.scatter import add_scatter_trace
+from scripts.python.routines.plot.violin import add_violin_trace
+from scripts.python.routines.plot.layout import add_layout
 import os
-from src.dnam.python.routines.datasets_features import *
-from src.dnam.python.routines.filter.pheno import filter_pheno
+from scripts.python.routines.filter.pheno import filter_pheno
 
 
 platform = "GPL13534"
